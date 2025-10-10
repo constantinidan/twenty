@@ -19,9 +19,10 @@ import { getDateFormatFromWorkspaceDateFormat } from '@/localization/utils/getDa
 import { getTimeFormatFromWorkspaceTimeFormat } from '@/localization/utils/getTimeFormatFromWorkspaceTimeFormat';
 import { AppPath } from '@/types/AppPath';
 import { getDateFnsLocale } from '@/ui/field/display/utils/getDateFnsLocale.util';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { type ColorScheme } from '@/workspace-member/types/WorkspaceMember';
 import { enUS } from 'date-fns/locale';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { type APP_LOCALES, SOURCE_LOCALE } from 'twenty-shared/translations';
 import { type ObjectPermissions } from 'twenty-shared/types';
@@ -46,6 +47,8 @@ export const UserProviderEffect = () => {
   const setAvailableWorkspaces = useSetRecoilState(availableWorkspacesState);
   const setDateTimeFormat = useSetRecoilState(dateTimeFormatState);
   const isLoggedIn = useIsLogged();
+  const { enqueueInfoSnackBar } = useSnackBar();
+  const hasShownWelcomeNotification = useRef(false);
 
   const updateLocaleCatalog = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -89,6 +92,19 @@ export const UserProviderEffect = () => {
     if (!isDefined(queryData?.currentUser)) return;
 
     setCurrentUser(queryData.currentUser);
+
+    if (!hasShownWelcomeNotification.current && isDefined(queryData.currentUser)) {
+      const firstName = queryData.currentUser.firstName;
+      const welcomeMessage = firstName
+        ? `Welcome back, ${firstName}!`
+        : 'Welcome back!';
+
+      enqueueInfoSnackBar({
+        message: welcomeMessage,
+      });
+
+      hasShownWelcomeNotification.current = true;
+    }
 
     if (isDefined(queryData.currentUser.currentWorkspace)) {
       setCurrentWorkspace({
