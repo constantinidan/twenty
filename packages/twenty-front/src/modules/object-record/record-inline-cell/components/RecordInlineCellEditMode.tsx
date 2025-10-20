@@ -12,6 +12,7 @@ import {
   autoUpdate,
   flip,
   offset,
+  size,
   useFloating,
   type MiddlewareState,
 } from '@floating-ui/react';
@@ -82,6 +83,18 @@ export const RecordInlineCellEditMode = ({
               crossAxis: -5,
             },
       ),
+      size({
+        apply: ({ rects, elements }) => {
+          const INLINE_CELL_EDITOR_MIN_WIDTH = 140;
+          const widthToApply = Math.max(
+            rects.reference.width,
+            INLINE_CELL_EDITOR_MIN_WIDTH,
+          );
+          Object.assign(elements.floating.style, {
+            width: `${widthToApply}px`,
+          });
+        },
+      }),
       setFieldInputLayoutDirectionMiddleware,
     ],
     whileElementsMounted: autoUpdate,
