@@ -91,7 +91,7 @@ export const RecordTableCellEditMode = ({
 
   const isFieldInputOnly = useIsFieldInputOnly();
 
-  const { cellPosition } = useContext(RecordTableCellContext);
+  const { cellPosition, columnDefinition } = useContext(RecordTableCellContext);
 
   const { focusRecordTableCell } = useFocusRecordTableCell();
 
@@ -112,7 +112,7 @@ export const RecordTableCellEditMode = ({
       ) : (
         <OverlayContainer
           ref={refs.setFloating}
-          style={floatingStyles}
+          style={{ ...floatingStyles, width: `${columnDefinition.size}px` }}
           borderRadius="sm"
           hasDangerBorder={isFieldInError}
         >
