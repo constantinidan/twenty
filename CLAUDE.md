@@ -106,6 +106,25 @@ packages/
 - **Recoil** for global state management
 - Component-specific state with React hooks
 - GraphQL cache managed by Apollo Client
+- **React Hook Form** for form state management (preferred over manual useState)
+
+### Form Handling Best Practices
+When working with forms that use React Hook Form:
+- **Prefer `formState.isSubmitting`** over manual loading states (useState)
+- This automatically tracks the entire form submission lifecycle
+- Prevents double submissions without manual state management
+- Example:
+  ```tsx
+  const { form } = useFormHook();
+
+  // ✅ GOOD: Use formState.isSubmitting
+  <Button disabled={form.formState.isSubmitting} />
+
+  // ❌ AVOID: Manual loading state when React Hook Form handles it
+  const [isLoading, setIsLoading] = useState(false);
+  // ... manual state management
+  ```
+- Only use manual loading states when you need to track operations beyond form submission
 
 ### Backend Architecture
 - **NestJS modules** for feature organization
@@ -139,6 +158,62 @@ packages/
 - **Integration tests** for critical backend workflows
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
+
+### Testing Requirements for Bug Fixes
+**IMPORTANT**: When fixing bugs, you MUST add tests to prevent regressions:
+
+1. **Component fixes** (UI bugs, form behavior, interactions):
+   - Create or update `__tests__/ComponentName.test.tsx` next to the component
+   - Use `@testing-library/react` for rendering and user interactions
+   - Wrap with required providers: `RecoilRoot`, `MemoryRouter` for routing
+   - Test the specific bug scenario to ensure it's fixed
+   - Example test structure:
+     ```tsx
+     import { render, waitFor, fireEvent } from '@testing-library/react';
+     import { RecoilRoot } from 'recoil';
+
+     describe('ComponentName', () => {
+       it('should prevent double submission when button is clicked twice', async () => {
+         const onSubmit = jest.fn();
+         const { getByRole } = render(
+           <RecoilRoot>
+             <ComponentName onSubmit={onSubmit} />
+           </RecoilRoot>
+         );
+
+         const button = getByRole('button');
+         fireEvent.click(button);
+         fireEvent.click(button); // Double click
+
+         await waitFor(() => {
+           expect(onSubmit).toHaveBeenCalledTimes(1); // Should only be called once
+         });
+       });
+     });
+     ```
+
+2. **Hook fixes** (custom hooks, state management):
+   - Create or update `__tests__/useHookName.test.tsx` in the hooks directory
+   - Use `renderHook` from `@testing-library/react`
+   - Provide necessary wrappers (RecoilRoot, context providers)
+   - Test the bug scenario with the hook's behavior
+
+3. **Backend fixes** (API, database, business logic):
+   - Add unit tests in `__tests__/` directory near the fixed code
+   - Add integration tests if the fix involves multiple modules
+   - Mock external dependencies appropriately
+
+### Running Tests After Changes
+```bash
+# Run tests for the modified component/module
+npx nx test twenty-front --testPathPattern=ComponentName
+
+# Run all tests for the package
+npx nx test twenty-front
+
+# Run tests in watch mode during development
+npx nx test twenty-front --watch
+```
 
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
