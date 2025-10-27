@@ -212,6 +212,8 @@ export const SignInUpTOTPVerification = () => {
     setSignInUpStep(SignInUpStep.TwoFactorAuthenticationProvision);
   };
 
+  const isSubmitting = form.formState.isSubmitting;
+
   return (
     <StyledForm onSubmit={form.handleSubmit(submitOTP)}>
       <StyledTextContainer>
@@ -257,7 +259,13 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        disabled={isSubmitting}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>

@@ -105,7 +105,9 @@ packages/
 ### State Management
 - **Recoil** for global state management
 - Component-specific state with React hooks
+- **React Hook Form** `formState` for form submission tracking (e.g., `formState.isSubmitting`, `formState.errors`)
 - GraphQL cache managed by Apollo Client
+- **Prefer library-provided state over manual useState** when available (more maintainable and idiomatic)
 
 ### Backend Architecture
 - **NestJS modules** for feature organization
@@ -133,6 +135,8 @@ packages/
 - Follow **Nx** workspace conventions for imports
 - Use **Lingui** for internationalization
 - Components should be in their own directories with tests and stories
+- **Form handling**: Use React Hook Form's `formState.isSubmitting` to disable buttons during submission (prevents double-submit)
+- **Avoid manual state for library-tracked concerns**: Don't use `useState` for form submission loading when form libraries provide built-in state
 
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
