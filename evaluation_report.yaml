@@ -1,0 +1,34 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/14286
+issue: https://github.com/twentyhq/twenty/issues/14278
+overall_score: 8.3
+passed: true
+notes:
+  strengths: |
+    - Successfully fixes the double-click issue by preventing multiple submissions
+    - Uses react-hook-form's built-in formState.isSubmitting instead of manual state
+    - More robust approach than ground truth (leverages form library features)
+    - Disables both the submit button AND the OTP input field (extra safety)
+    - Adds visual feedback with Loader icon on the submit button
+    - Code is clean and follows React best practices
+    - Properly handles the disabled state with CSS opacity styling
+  weaknesses: |
+    - Missing tests (ground truth also has no tests, but this is still a weakness)
+    - Slightly more complex than ground truth due to Loader icon addition
+    - No validation that formState.isSubmitting properly resets on error
+  deviations:
+    positive:
+      - "Uses formState.isSubmitting from react-hook-form instead of manual useState, which is more idiomatic and reliable"
+      - "Disables the OTP input field in addition to the submit button, providing double protection against race conditions"
+      - "Adds visual feedback with Loader icon, improving user experience"
+      - "Eliminates try/finally block since form.handleSubmit automatically manages isSubmitting state"
+    neutral:
+      - "Different state management approach (formState vs useState) but both are valid"
+      - "Visual styling with opacity:0.3 on disabled OTP input vs no visual change in ground truth"
+    negative:
+      - "Adds import for Loader component which increases bundle size slightly (minimal impact)"
+scores:
+  correctness: 10
+  completeness: 8
+  tests: 0
+  quality: 9
+  similarity: 8
