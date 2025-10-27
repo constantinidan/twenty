@@ -1,0 +1,29 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/14286
+issue: https://github.com/twentyhq/twenty/issues/14278
+overall_score: 8.4
+passed: true
+notes:
+  strengths: |
+    - Correctly fixes the double-click issue by disabling the button during submission
+    - Uses react-hook-form's built-in form state (form.formState.isSubmitting) instead of managing separate state
+    - Cleaner implementation with fewer imports and less boilerplate code
+    - No unnecessary useState hook - leverages existing form library patterns
+    - Code is more maintainable and idiomatic for react-hook-form usage
+    - Achieves the same functional result as the ground truth PR
+  weaknesses: |
+    - No unit tests added to verify the behavior (consistent with ground truth which also had no tests)
+    - Minimal approach lacks explicit state management, though this is actually a strength in this context
+  deviations:
+    positive:
+      - Uses form.formState.isSubmitting instead of manually managing isLoading state with useState
+      - More idiomatic react-hook-form pattern that reduces unnecessary state management
+      - Cleaner code with fewer lines and imports
+      - Better separation of concerns - relies on form library for form submission state tracking
+    neutral:
+      - Different implementation approach (built-in form state vs manual state), but produces identical user-facing behavior
+scores:
+  correctness: 10
+  completeness: 9
+  tests: 3
+  quality: 9
+  similarity: 8
