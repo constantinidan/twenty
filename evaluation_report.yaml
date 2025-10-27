@@ -1,0 +1,29 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: Preserve all emails, phones, and links when merging records
+overall_score: 4.2
+passed: false
+notes:
+  strengths: |
+    - The working directory has the core idea right: preserve additional primary values when merging
+    - Implementation correctly handles deduplication using Set and uniqBy
+    - Properly filters to exclude the priority record's primary from additional items
+    - Uses the same utility functions and patterns as ground truth
+  weaknesses: |
+    - CRITICAL: Test coverage is incomplete - missing PHONES and LINKS test cases entirely
+    - CRITICAL: Implementation uses a different logic pattern than ground truth
+    - The approach of only collecting primary emails/phones/links from non-priority records differs from ground truth's approach of collecting from all records then filtering
+    - Integration tests were not updated with new expected values
+    - Missing 72 lines of new test cases that ground truth includes
+  deviations:
+    negative:
+      - Implementation logic differs: uses conditional checks for non-priority records instead of collecting from all records then filtering
+      - Test spec file missing PHONES and LINKS test cases (90 lines vs 162 lines in ground truth)
+      - Integration test expectations not updated to reflect the changes
+      - The working implementation excludes primary emails from the priority record itself in non-priority record check, which is logically different from ground truth's simpler approach
+      - Variable naming differs (ground truth uses 'allEmails', 'allPhones', 'allLinks'; working uses 'allAdditionalEmails', 'allAdditionalPhones', 'allSecondaryLinks' with conditional primary collection)
+scores:
+  correctness: 3
+  completeness: 2
+  tests: 1
+  quality: 5
+  similarity: 2
