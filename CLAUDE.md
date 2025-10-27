@@ -145,6 +145,67 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
 
+#### Test Completeness Requirements
+When modifying utility functions or core logic:
+1. **Update existing tests**: Modify test expectations to reflect new behavior
+2. **Add comprehensive test cases**: If a feature works for one field type, it should have tests for ALL related field types
+   - Example: If you modify email merging, also test phones and links merging (if they use the same pattern)
+3. **Cover all scenarios**:
+   - Basic merge operations
+   - Deduplication behavior
+   - Priority record selection
+   - Edge cases (empty values, single records, all additional items, etc.)
+4. **Test both unit AND integration levels**: Utility functions need unit tests AND integration tests showing real-world usage
+
+## Utility Function Implementation Patterns
+
+### Discovery Before Implementation
+When implementing new utility functions or modifying existing ones:
+1. **Search the codebase** for similar utility functions and analyze their patterns
+2. **Look at test files** for the utilities to understand expected behavior and patterns
+3. **Check if related utilities exist**: If modifying one composite field utility (emails), check if similar utilities exist (phones, links) and ensure consistency
+4. **Review existing tests carefully**: Test expectations reveal the intended behavior and logic flow
+
+### Composite Field Merging
+When implementing utilities to merge composite fields (emails, phones, links):
+
+1. **Collect All Values First**: Create a single array that collects ALL primary and additional values from all records
+   - Example: `allEmails: string[] = []` (not `allAdditionalEmails`)
+   - Add ALL primary values from all records to this array
+   - Add ALL additional/secondary values from all records to this array
+
+2. **Deduplicate**: Use Set (for primitives) or uniqBy (for objects) to remove duplicates
+   - Maintain deduplication based on the key value (email string, phone number, link URL)
+
+3. **Filter Out Priority**: After deduplication, filter to exclude the priority record's primary value
+   - The priority record's primary value was already selected as the result's primary field
+   - Keep everything else (including other records' primary values, which become additional/secondary)
+
+4. **Example Pattern**:
+   ```typescript
+   // 1. Collect ALL values (primary + additional from all records)
+   const allEmails: string[] = [];
+   recordsWithValues.forEach((record) => {
+     // Add primary email from this record
+     if (hasRecordFieldValue(record.value.primaryEmail)) {
+       allEmails.push(record.value.primaryEmail);
+     }
+     // Add additional emails from this record
+     const additionalEmails = parseArrayOrJsonStringToArray<string>(record.value.additionalEmails);
+     allEmails.push(...additionalEmails.filter((email) => hasRecordFieldValue(email)));
+   });
+
+   // 2. Deduplicate
+   const uniqueEmails = Array.from(new Set(allEmails));
+
+   // 3. Filter out the priority record's primary value
+   const resultEmails = uniqueEmails.filter((email) => email !== primaryEmail);
+   ```
+
+5. **Variable Naming**: Use generic names that reflect collecting all values
+   - Use: `allEmails`, `allPhones`, `allLinks` (not `allAdditionalEmails`, `allAdditionalPhones`)
+   - Use: `uniqueEmails`, `uniquePhones`, `uniqueLinks` (not with "Additional"/"Secondary" prefix)
+
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
 - `tsconfig.base.json` - Base TypeScript configuration
