@@ -1,0 +1,24 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/14286
+issue: https://github.com/twentyhq/twenty/issues/14278
+overall_score: 8.9
+passed: true
+notes:
+  strengths: "The agent's solution correctly fixes the double-click issue by disabling the submit button during form submission. The implementation is actually superior to the ground truth - it uses form.formState.isSubmitting from react-hook-form, which is the idiomatic React Hook Form approach and eliminates the need for manual state management. The code is cleaner with fewer lines of code (7 additions vs 13 in ground truth), no new imports needed, and no manual state lifecycle management. The commit message is well-written and explains the issue and solution clearly."
+  weaknesses: "No tests were added to verify the fix, though this matches the ground truth PR which also had no tests. The component file itself has no existing test file, suggesting the project may not have comprehensive test coverage for this feature area."
+  deviations:
+    positive:
+      - "Uses form.formState.isSubmitting from react-hook-form instead of manual useState - this is the idiomatic and recommended approach for React Hook Form"
+      - "Cleaner implementation with fewer lines of code (7 additions vs 13)"
+      - "No need to import useState or manage loading state lifecycle manually"
+      - "Automatically handles all form submission states (not just the async function but the entire form submission lifecycle)"
+      - "More maintainable - if submitOTP changes, the isSubmitting state is automatically managed by the form library"
+    neutral:
+      - "Different technical approach but achieves the same end result of preventing double-click submissions"
+    negative:
+      - "No tests added (though ground truth also had no tests)"
+scores:
+  correctness: 10
+  completeness: 10
+  tests: 0
+  quality: 10
+  similarity: 7
