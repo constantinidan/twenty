@@ -83,11 +83,12 @@ describe('people merge resolvers (integration)', () => {
         expect.arrayContaining([
           'john.alt@example.com',
           'john.work@example.com',
+          'jane@example.com',
           'jane.alt@example.com',
           'jane.personal@example.com',
         ]),
       );
-      expect(mergedPerson.emails.additionalEmails).toHaveLength(4);
+      expect(mergedPerson.emails.additionalEmails).toHaveLength(5);
     });
 
     it('should merge emails with deduplication', async () => {
@@ -145,11 +146,12 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.emails.primaryEmail).toBe('alice@example.com');
       const additionalEmails = mergedPerson.emails.additionalEmails;
 
-      expect(additionalEmails).toHaveLength(3);
+      expect(additionalEmails).toHaveLength(4);
       expect(additionalEmails).toEqual(
         expect.arrayContaining([
           'shared@example.com',
           'alice.work@example.com',
+          'bob@example.com',
           'bob.work@example.com',
         ]),
       );
@@ -213,6 +215,7 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.emails.primaryEmail).toBe('second@example.com');
       expect(mergedPerson.emails.additionalEmails).toEqual(
         expect.arrayContaining([
+          'first@example.com',
           'first.extra@example.com',
           'second.extra@example.com',
         ]),
@@ -403,9 +406,10 @@ describe('people merge resolvers (integration)', () => {
         expect.arrayContaining([
           expect.objectContaining({ number: '5559876543' }),
           expect.objectContaining({ number: '4441112222' }),
+          expect.objectContaining({ number: '4445556789' }),
         ]),
       );
-      expect(mergedPerson.phones.additionalPhones).toHaveLength(2);
+      expect(mergedPerson.phones.additionalPhones).toHaveLength(3);
 
       expect(mergedPerson.whatsapp.primaryPhoneNumber).toBe('810407803');
       expect(mergedPerson.whatsapp.primaryPhoneCountryCode).toBe('FR');
@@ -413,10 +417,11 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.whatsapp.additionalPhones).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ number: '8104078034' }),
+          expect.objectContaining({ number: '987654321' }),
           expect.objectContaining({ number: '123456789' }),
         ]),
       );
-      expect(mergedPerson.whatsapp.additionalPhones).toHaveLength(2);
+      expect(mergedPerson.whatsapp.additionalPhones).toHaveLength(3);
     });
   });
 });

@@ -54,6 +54,18 @@ export const mergeLinksFieldValues = (
     allSecondaryLinks.push(
       ...secondaryLinks.filter((link) => hasRecordFieldValue(link.url)),
     );
+
+    // Also collect the primary link from non-priority records as a secondary link
+    if (
+      record.recordId !== priorityRecordId &&
+      hasRecordFieldValue(record.value.primaryLinkUrl) &&
+      record.value.primaryLinkUrl !== primaryLinkUrl
+    ) {
+      allSecondaryLinks.push({
+        url: record.value.primaryLinkUrl,
+        label: record.value.primaryLinkLabel,
+      });
+    }
   });
 
   const uniqueSecondaryLinks = uniqBy(allSecondaryLinks, 'url');
