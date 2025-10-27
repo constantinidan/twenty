@@ -18,6 +18,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { OTPInput, type SlotProps } from 'input-otp';
 import { Controller } from 'react-hook-form';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { Loader } from 'twenty-ui/feedback';
 import { MainButton } from 'twenty-ui/input';
 import { ClickToActionLink } from 'twenty-ui/navigation';
 import { useNavigateApp } from '~/hooks/useNavigateApp';
@@ -186,6 +187,7 @@ export const SignInUpTOTPVerification = () => {
   const { t } = useLingui();
 
   const { form } = useTwoFactorAuthenticationForm();
+  const { isSubmitting } = form.formState;
 
   const submitOTP = async (values: OTPFormValues) => {
     try {
@@ -228,6 +230,7 @@ export const SignInUpTOTPVerification = () => {
               onBlur={onBlur}
               onChange={onChange}
               value={value}
+              disabled={isSubmitting}
               render={({ slots }) => (
                 <StyledOTPContainer>
                   <StyledSlotGroup>
@@ -257,7 +260,14 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        Icon={() => (isSubmitting ? <Loader /> : null)}
+        disabled={isSubmitting}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>
