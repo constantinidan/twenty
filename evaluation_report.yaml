@@ -1,0 +1,37 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: Preserve all emails, phones, and links when merging records
+overall_score: 5.4
+passed: false
+notes:
+  strengths: |
+    - Correctly identified and fixed the core logic issue in all three utility files (merge-emails, merge-phones, merge-links)
+    - Added primary value collection from all records being merged
+    - Properly implemented deduplication filtering to prevent duplicates
+    - Updated integration tests to reflect the new behavior
+    - Added helpful comments explaining the changes in the code
+    - Clean implementation that matches the ground truth approach closely
+  weaknesses: |
+    - CRITICAL: Missing the unit tests for phones and links in merge-field-values.util.spec.ts (106 lines of test code)
+    - Unit test file only shows the old test expectations, not the new comprehensive tests added in ground truth
+    - Missing test coverage for the new phone merging behavior
+    - Missing test coverage for the new links merging behavior
+    - Only updated the emails test expectation, not added new test cases
+    - Integration tests were updated but unit tests are incomplete
+  deviations:
+    positive:
+      - Added inline comments explaining the logic changes which improves code maintainability
+    neutral:
+      - Variable naming is slightly different (uniqueAdditionalEmails vs uniqueEmails in emails util) but functionally equivalent
+      - Integration test assertions are ordered slightly differently but test the same behavior
+    negative:
+      - Missing 106 lines of new unit tests in merge-field-values.util.spec.ts
+      - Unit test file was not properly updated with new test cases for phones and links
+      - The unit test for emails only had expectations updated, not the comprehensive new test added in ground truth
+      - Missing two new test cases: "should merge phones for PHONES field" and "should merge links for LINKS field"
+      - This leaves the new functionality without proper unit test coverage
+scores:
+  correctness: 9
+  completeness: 4
+  tests: 2
+  quality: 8
+  similarity: 8
