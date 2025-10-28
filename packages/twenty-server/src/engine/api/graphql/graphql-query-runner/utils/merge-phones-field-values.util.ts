@@ -50,6 +50,19 @@ export const mergePhonesFieldValues = (
   const allAdditionalPhones: AdditionalPhoneMetadata[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Add primary phone from non-priority records if it's different from the selected primary phone
+    if (
+      hasRecordFieldValue(record.value.primaryPhoneNumber) &&
+      record.value.primaryPhoneNumber !== primaryPhoneNumber
+    ) {
+      allAdditionalPhones.push({
+        number: record.value.primaryPhoneNumber,
+        countryCode: record.value.primaryPhoneCountryCode,
+        callingCode: record.value.primaryPhoneCallingCode,
+      });
+    }
+
+    // Add all additional phones from all records
     if (Array.isArray(record.value.additionalPhones)) {
       allAdditionalPhones.push(
         ...record.value.additionalPhones.filter((phone) =>

@@ -95,6 +95,9 @@ describe('companies merge resolvers (integration)', () => {
             url: 'linkedin.com/company/subsidiary-a2',
           }),
           expect.objectContaining({
+            url: 'https://linkedin.com/company/company-b',
+          }),
+          expect.objectContaining({
             url: 'linkedin.com/company/subsidiary-b1',
           }),
           expect.objectContaining({
@@ -102,7 +105,7 @@ describe('companies merge resolvers (integration)', () => {
           }),
         ]),
       );
-      expect(mergedCompany.linkedinLink.secondaryLinks).toHaveLength(4);
+      expect(mergedCompany.linkedinLink.secondaryLinks).toHaveLength(5);
     });
 
     it('should merge links with deduplication', async () => {
@@ -171,7 +174,7 @@ describe('companies merge resolvers (integration)', () => {
       );
       const secondaryLinks = mergedCompany.linkedinLink.secondaryLinks;
 
-      expect(secondaryLinks).toHaveLength(3);
+      expect(secondaryLinks).toHaveLength(4);
 
       const urls = secondaryLinks.map((link: { url: string }) => link.url);
 
@@ -179,6 +182,7 @@ describe('companies merge resolvers (integration)', () => {
         expect.arrayContaining([
           'linkedin.com/company/shared-subsidiary',
           'linkedin.com/company/tech-division',
+          'https://linkedin.com/company/corp-tech',
           'linkedin.com/company/corp-division',
         ]),
       );

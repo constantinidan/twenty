@@ -83,7 +83,121 @@ describe('mergeFieldValues', () => {
 
       expect(result).toEqual({
         primaryEmail: 'priority@example.com',
-        additionalEmails: ['extra1@example.com', 'extra2@example.com'],
+        additionalEmails: [
+          'first@example.com',
+          'extra1@example.com',
+          'extra2@example.com',
+        ],
+      });
+    });
+
+    it('should preserve primary email from non-priority records in additionalEmails', () => {
+      const emailRecords = [
+        {
+          value: {
+            primaryEmail: 'first@example.com',
+            additionalEmails: null,
+          },
+          recordId: 'record1',
+        },
+        {
+          value: {
+            primaryEmail: 'priority@example.com',
+            additionalEmails: null,
+          },
+          recordId: PRIORITY_RECORD_ID,
+        },
+      ];
+
+      const result = mergeFieldValues(
+        FieldMetadataType.EMAILS,
+        emailRecords,
+        PRIORITY_RECORD_ID,
+      );
+
+      expect(result).toEqual({
+        primaryEmail: 'priority@example.com',
+        additionalEmails: ['first@example.com'],
+      });
+    });
+
+    it('should preserve primary phone from non-priority records in additionalPhones', () => {
+      const phoneRecords = [
+        {
+          value: {
+            primaryPhoneNumber: '5551234567',
+            primaryPhoneCountryCode: 'US',
+            primaryPhoneCallingCode: '+1',
+            additionalPhones: null,
+          },
+          recordId: 'record1',
+        },
+        {
+          value: {
+            primaryPhoneNumber: '5559999999',
+            primaryPhoneCountryCode: 'US',
+            primaryPhoneCallingCode: '+1',
+            additionalPhones: null,
+          },
+          recordId: PRIORITY_RECORD_ID,
+        },
+      ];
+
+      const result = mergeFieldValues(
+        FieldMetadataType.PHONES,
+        phoneRecords,
+        PRIORITY_RECORD_ID,
+      );
+
+      expect(result).toEqual({
+        primaryPhoneNumber: '5559999999',
+        primaryPhoneCountryCode: 'US',
+        primaryPhoneCallingCode: '+1',
+        additionalPhones: [
+          {
+            number: '5551234567',
+            countryCode: 'US',
+            callingCode: '+1',
+          },
+        ],
+      });
+    });
+
+    it('should preserve primary link from non-priority records in secondaryLinks', () => {
+      const linkRecords = [
+        {
+          value: {
+            primaryLinkUrl: 'https://first.com',
+            primaryLinkLabel: 'First',
+            secondaryLinks: null,
+          },
+          recordId: 'record1',
+        },
+        {
+          value: {
+            primaryLinkUrl: 'https://priority.com',
+            primaryLinkLabel: 'Priority',
+            secondaryLinks: null,
+          },
+          recordId: PRIORITY_RECORD_ID,
+        },
+      ];
+
+      const result = mergeFieldValues(
+        FieldMetadataType.LINKS,
+        linkRecords,
+        PRIORITY_RECORD_ID,
+      );
+
+      expect(result).toEqual({
+        primaryLinkUrl: 'https://priority.com',
+        primaryLinkLabel: 'Priority',
+        secondaryLinks: [
+          {
+            url: 'https://first.com',
+            label: 'First',
+          },
+        ],
       });
     });
   });
