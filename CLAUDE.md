@@ -133,6 +133,14 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
 
+### Testing Requirements
+- **When modifying utility functions or core logic**: Always check for and update corresponding unit tests
+  - Backend utilities typically have tests in `__tests__/` directories alongside the source files
+  - If unit tests exist for the modified file, update them to reflect new behavior
+  - If the behavior change is significant, consider adding new test cases
+- **Integration tests**: Run relevant integration tests for the feature area being modified
+- **Test discovery**: Use `Glob` tool to find test files (e.g., `**/*.spec.ts`, `**/__tests__/**/*.ts`)
+
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
