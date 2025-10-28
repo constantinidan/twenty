@@ -127,6 +127,19 @@ packages/
 
 IMPORTANT: Use Context7 for code generation, setup or configuration steps, or library/API documentation. Automatically use the Context7 MCP tools to resolve library IDs and get library docs without waiting for explicit requests.
 
+### Problem-Solving Approach
+When fixing bugs or implementing features, follow this analysis pattern:
+
+1. **Identify the data flow**: Trace where data originates, how it's transformed, and where it's consumed
+2. **Find the transformation point**: Locate where the issue manifests (e.g., display, export, storage)
+3. **Choose the fix location wisely**:
+   - Fix at the **transformation layer** (utilities, formatters, exporters) rather than at the source (configs, constants)
+   - Keep **configuration files clean** with natural data structures
+   - Apply **type conversions and formatting** in processing functions, not in config definitions
+4. **Consider side effects**: Changes to config files affect all consumers; changes to specific utilities are more localized
+5. **Check for similar patterns**: Look for existing solutions in the codebase before introducing new approaches
+6. **Validate data standards**: Ensure compliance with specs (RFC 4122 for UUIDs, ISO 8601 for dates, etc.)
+
 ### Before Making Changes
 1. Always run linting and type checking after code changes
 2. Test changes with relevant test suites
@@ -138,6 +151,13 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - Follow **Nx** workspace conventions for imports
 - Use **Lingui** for internationalization
 - Components should be in their own directories with tests and stories
+
+### Data Formatting and Transformation Best Practices
+- **Prefer runtime transformation over config modification**: When fixing data format issues, prefer transforming data at the point of use rather than modifying configuration/constant files
+- **Keep configs clean and type-safe**: Configuration files should store data in their natural structure (objects, arrays) without pre-stringification
+- **Handle type conversions in processing logic**: CSV export, API serialization, and similar transformations should handle type conversions (e.g., `JSON.stringify()`) in their respective utility functions
+- **Validate data standards**: When working with UUIDs, ensure they follow RFC 4122 standards (check version and variant bits)
+- **Consider the data flow**: Trace data from source (config) → transformation (export/processing) → output (CSV/JSON) to identify the optimal location for transformations
 
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
