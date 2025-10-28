@@ -257,7 +257,13 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        disabled={form.formState.isSubmitting}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>
