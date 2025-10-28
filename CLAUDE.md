@@ -140,6 +140,15 @@ packages/
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
 
+### Testing Requirements for Bug Fixes
+When fixing bugs, especially UI interaction issues (clicks, form submissions, state management), consider adding tests to prevent regressions:
+- **User interaction bugs**: Add unit tests that verify the fix (e.g., disabled states, loading states, double-click prevention)
+- **Component behavior**: Test state changes, prop handling, and event handlers
+- **Form submissions**: Test loading states, error handling, and submission prevention during async operations
+- **Look for existing test files**: Check if a `.test.tsx` or `.spec.tsx` file exists for the component you're fixing
+- **Follow existing patterns**: Match the testing style and patterns used in similar component tests
+- When tests are not feasible or would be overly complex for the fix, document why in the PR description
+
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
 - `tsconfig.base.json` - Base TypeScript configuration
