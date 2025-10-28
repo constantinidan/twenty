@@ -18,6 +18,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { OTPInput, type SlotProps } from 'input-otp';
 import { Controller } from 'react-hook-form';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { Loader } from 'twenty-ui/feedback';
 import { MainButton } from 'twenty-ui/input';
 import { ClickToActionLink } from 'twenty-ui/navigation';
 import { useNavigateApp } from '~/hooks/useNavigateApp';
@@ -257,7 +258,14 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        disabled={form.formState.isSubmitting}
+        Icon={() => (form.formState.isSubmitting ? <Loader /> : null)}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>
