@@ -133,6 +133,30 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
 
+### Making Complete Changes
+When fixing bugs or implementing features, ensure completeness by following these steps:
+
+1. **Search for All Related References**: When changing constants, error codes, enums, or function signatures:
+   - Use Grep to find ALL occurrences across the codebase
+   - Check utility files, exception handlers, and error mappers
+   - Example: If changing `USER_ALREADY_EXIST` constant, search for all usages in exception handlers, REST status mappers, GraphQL error handlers, etc.
+
+2. **Fix Grammatical Errors Consistently**: When you notice grammatical errors in error messages or constants:
+   - Fix both the constant definition AND all its usages
+   - Fix the error message strings to match the corrected grammar
+   - Example: Change `USER_ALREADY_EXIST` to `USER_ALREADY_EXISTS` everywhere, and update message from "User already exist" to "User already exists"
+
+3. **Update All Related Files**: A complete fix typically involves:
+   - The primary file with the logic change
+   - Constant/enum definition files
+   - Exception handler utilities
+   - Error mapping utilities (GraphQL, REST, etc.)
+   - Tests that reference the changed code
+
+4. **Verify TypeScript Compilation**: After updating constants/enums:
+   - Run type checking to catch any missed references
+   - TypeScript will error on undefined constants, helping you find all usages
+
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
