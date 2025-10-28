@@ -1,0 +1,19 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: Preserve all emails, phones, and links when merging records
+overall_score: 6.1
+passed: false
+notes:
+  strengths: "The agent correctly identified the core issue and implemented the fix in all three utility functions (merge-emails, merge-phones, merge-links). The implementation successfully preserves primary values from non-priority records as additional/secondary values. Integration tests were added to verify the new behavior, and existing tests were updated appropriately. The commit message is clear and well-structured."
+  weaknesses: "Critical missing piece: The agent did not add unit tests to merge-field-values.util.spec.ts. The ground truth PR includes comprehensive unit tests for PHONES and LINKS field types (106 new lines of unit tests), but the agent's implementation completely omits these. The implementation approach differs significantly from ground truth - the agent adds conditional logic at the end of the forEach loop, while ground truth refactors the entire collection logic to gather ALL values first then filter out the primary. This architectural difference makes the ground truth cleaner and more maintainable."
+  deviations:
+    negative:
+      - "Missing unit tests: Ground truth adds 106 lines of unit tests in merge-field-values.util.spec.ts covering PHONES and LINKS field merging scenarios, but agent added zero unit tests to this file"
+      - "Different architectural approach: Agent uses conditional append logic (if recordId !== priorityRecordId), while ground truth refactors to collect all primary values first, then filters out the selected primary. Ground truth approach is cleaner and more maintainable"
+      - "Variable naming: Ground truth renames variables (allAdditionalEmails -> allEmails, allSecondaryLinks -> allLinks, allAdditionalPhones -> allPhones) to reflect collecting ALL values, while agent keeps old names which are now semantically incorrect"
+      - "Ground truth also updates the existing email unit test expectation to include 'first@example.com' in additionalEmails, showing it properly handles this case in unit tests"
+scores:
+  correctness: 8
+  completeness: 5
+  tests: 3
+  quality: 6
+  similarity: 4
