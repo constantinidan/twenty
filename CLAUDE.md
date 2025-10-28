@@ -133,6 +133,33 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
 
+### Code Implementation Patterns
+
+**CRITICAL: When modifying existing utility functions, always follow the exact pattern established in the codebase:**
+
+1. **Collection then Filter Pattern**: When collecting values from multiple records:
+   - Collect ALL values from ALL records first (without conditionals)
+   - Apply deduplication using Set or uniqBy
+   - Filter out unwanted values AFTER deduplication
+   - Example: Collect all primary emails from all records, deduplicate, then filter out the final primary email
+
+2. **Variable Naming Consistency**: Use names that reflect the complete collection phase:
+   - Use `allEmails` (not `allAdditionalEmails`) when collecting all email values
+   - Use `allPhones` (not `allAdditionalPhones`) when collecting all phone values
+   - Use `allLinks` (not `allSecondaryLinks`) when collecting all link values
+   - Only use specific names like `uniqueEmails` or `filteredEmails` after processing
+
+3. **Test Coverage Requirements**: When modifying utility functions:
+   - Update ALL relevant test files, including both unit tests and integration tests
+   - For merge utilities, always check and update `__tests__/merge-field-values.util.spec.ts`
+   - Add test cases for ALL field types affected (EMAILS, PHONES, LINKS)
+   - Verify test expectations match the new behavior (e.g., primary values from non-priority records should appear in results)
+
+4. **Avoid Premature Optimization**: Do not mix collection logic with filtering logic:
+   - BAD: `if (record.id !== priorityId) allItems.push(record.value)`
+   - GOOD: `allItems.push(record.value)` then `allItems.filter(item => item !== primaryValue)`
+   - This separation makes code more maintainable and easier to understand
+
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
