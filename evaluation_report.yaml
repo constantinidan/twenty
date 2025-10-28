@@ -1,0 +1,14 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: Preserve all emails, phones, and links when merging records
+overall_score: 10.0
+passed: true
+notes:
+  strengths: "The coding agent produced an IDENTICAL implementation to the ground truth PR. All 6 files were modified with exactly the same logic changes: collecting primary values from all records into the additional/secondary collections while filtering out duplicates and the selected primary value. The implementation includes comprehensive test coverage with 106 new lines of unit tests for phones and links merging, plus updates to all relevant integration tests. The commit message is clear and well-structured, explaining the changes in detail. Code quality is excellent with proper variable naming (allEmails, allPhones, allLinks instead of allAdditionalX), consistent filtering logic, and proper deduplication using Set for emails and uniqBy for phones/links. The solution elegantly solves the data loss problem by preserving all primary values from merged records."
+  weaknesses: "None identified. The implementation is perfect and matches the ground truth exactly."
+  deviations:
+scores:
+  correctness: 10
+  completeness: 10
+  tests: 10
+  quality: 10
+  similarity: 10
