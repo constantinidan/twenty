@@ -34,6 +34,11 @@ export const mergeEmailsFieldValues = (
   const allAdditionalEmails: string[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Add primary email from non-priority records to preserve all emails
+    if (record.recordId !== priorityRecordId && hasRecordFieldValue(record.value.primaryEmail)) {
+      allAdditionalEmails.push(record.value.primaryEmail);
+    }
+
     const additionalEmails = parseArrayOrJsonStringToArray<string>(
       record.value.additionalEmails,
     );

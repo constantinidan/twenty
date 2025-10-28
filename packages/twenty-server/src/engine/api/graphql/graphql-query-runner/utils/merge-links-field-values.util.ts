@@ -47,6 +47,14 @@ export const mergeLinksFieldValues = (
   const allSecondaryLinks: LinkMetadata[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Add primary link from non-priority records to preserve all links
+    if (record.recordId !== priorityRecordId && hasRecordFieldValue(record.value.primaryLinkUrl)) {
+      allSecondaryLinks.push({
+        label: record.value.primaryLinkLabel,
+        url: record.value.primaryLinkUrl,
+      });
+    }
+
     const secondaryLinks = parseArrayOrJsonStringToArray<LinkMetadata>(
       record.value.secondaryLinks,
     );
