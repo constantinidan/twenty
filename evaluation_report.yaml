@@ -1,0 +1,23 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15086
+issue: "Fix inverted logic in signUpWithoutWorkspace causing 'User already exists' error for new users"
+overall_score: 5.6
+passed: false
+notes:
+  strengths: "The coding agent correctly identified and fixed the core logic issue by changing from findUserByEmailOrThrow to findUserByEmail with an explicit check. The fix resolves the inverted logic that was causing new users to get 'User already exists' errors. The commit message is detailed and explains the problem well."
+  weaknesses: "The agent only made changes to one file (sign-in-up.service.ts) and missed three other critical files that need updates. The exception code constant remains USER_ALREADY_EXIST instead of being updated to USER_ALREADY_EXISTS (grammatically correct form). The two utility files that reference this exception code (auth-graphql-api-exception-handler.util.ts and get-auth-exception-rest-status.util.ts) were not updated, which creates inconsistency and potential issues. No tests were added or modified to verify the fix works correctly for both new and existing users. The error message in the code still says 'User already exist' (grammatically incorrect) instead of 'User already exists'."
+  deviations:
+    neutral:
+      - "Used variable name 'existingUser' instead of 'userExists' - both are clear and equivalent"
+    negative:
+      - "Missing update to AuthExceptionCode constant: USER_ALREADY_EXIST should be USER_ALREADY_EXISTS"
+      - "Missing update to auth-graphql-api-exception-handler.util.ts (line 29)"
+      - "Missing update to get-auth-exception-rest-status.util.ts (line 25)"
+      - "Error message still has grammatical error: 'User already exist' should be 'User already exists'"
+      - "No tests added to verify the fix works correctly"
+      - "Incomplete implementation - only 1 of 4 files changed"
+scores:
+  correctness: 7
+  completeness: 3
+  tests: 0
+  quality: 6
+  similarity: 5
