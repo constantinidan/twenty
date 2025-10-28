@@ -140,6 +140,32 @@ packages/
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
 
+### Testing Requirements for Bug Fixes
+When fixing bugs, especially UI-related issues, **always consider adding tests** to prevent regressions:
+
+1. **Frontend Component Tests**: For UI behavior changes (button states, form validation, loading states):
+   - Add unit tests using Jest and React Testing Library
+   - Test files should be colocated: `ComponentName.test.tsx` next to `ComponentName.tsx`
+   - Test user interactions (clicks, form submissions, error states)
+   - Example: Testing button disabled state during async operations
+
+2. **When to Add Tests**:
+   - Bug fixes that involve state changes or user interactions
+   - Changes to form submission logic
+   - Button enable/disable logic
+   - Loading states and error handling
+   - Any fix where the bug could easily regress
+
+3. **Test File Naming**:
+   - Unit tests: `*.test.tsx` or `*.test.ts`
+   - Integration tests: `*.integration.test.ts`
+   - Storybook stories: `*.stories.tsx`
+
+4. **Testing Async Operations**:
+   - Use `waitFor` from React Testing Library for async state updates
+   - Test both success and error scenarios
+   - Verify loading states during async operations
+
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
 - `tsconfig.base.json` - Base TypeScript configuration
