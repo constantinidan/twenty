@@ -105,6 +105,12 @@ packages/
 - **No 'any' type allowed**
 - **Event handlers preferred over useEffect** for state updates
 
+### Architectural Best Practices
+- **Fix problems at the right abstraction level**: When fixing data format issues, apply transformations at the lowest common processing point rather than at multiple specific call sites. This ensures consistency and avoids duplicated logic.
+- **Prefer generic solutions over specific ones**: When handling data transformations, choose the approach that works for all cases uniformly rather than special-casing individual scenarios.
+- **Update type signatures when changing data flow**: When modifying what types of values a function accepts or returns, always update the TypeScript type signatures to maintain type safety.
+- **Follow data format standards**: When working with standardized formats (UUIDs, timestamps, etc.), use the proper format specification. For UUIDs, use valid UUID v4 format with correct version bits (4 in position 15) and variant bits (8-b in position 17).
+
 ### State Management
 - **Recoil** for global state management
 - Component-specific state with React hooks
