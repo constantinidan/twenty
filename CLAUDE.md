@@ -101,11 +101,16 @@ packages/
 - **String literals over enums** (except for GraphQL enums)
 - **No 'any' type allowed**
 - **Event handlers preferred over useEffect** for state updates
+- **Leverage library features** over manual implementations (e.g., use React Hook Form's built-in state instead of useState for form loading states)
 
 ### State Management
 - **Recoil** for global state management
 - Component-specific state with React hooks
 - GraphQL cache managed by Apollo Client
+- **React Hook Form** for form state management
+  - Prefer built-in form state (e.g., `formState.isSubmitting`, `formState.errors`) over manual state management
+  - Use `formState.isSubmitting` to disable submit buttons and prevent double-click submissions
+  - Leverage controller patterns for integration with custom components
 
 ### Backend Architecture
 - **NestJS modules** for feature organization
