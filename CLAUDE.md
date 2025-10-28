@@ -138,9 +138,12 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - Follow **Nx** workspace conventions for imports
 - Use **Lingui** for internationalization
 - Components should be in their own directories with tests and stories
+- **Variable naming**: When refactoring logic that changes semantic meaning (e.g., collecting ALL items vs. only ADDITIONAL items), update variable names to reflect the new meaning for clarity
 
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
+  - When testing data merging or aggregation logic, write comprehensive test cases that cover the full merge behavior with multiple records and diverse data
+  - When updating integration tests, carefully review ALL assertions - not just the ones that fail - to ensure they match the new expected behavior
 - **Integration tests** for critical backend workflows
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
