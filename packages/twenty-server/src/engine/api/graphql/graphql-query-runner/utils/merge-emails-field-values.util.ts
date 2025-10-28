@@ -41,6 +41,15 @@ export const mergeEmailsFieldValues = (
     allAdditionalEmails.push(
       ...additionalEmails.filter((email) => hasRecordFieldValue(email)),
     );
+
+    // Preserve primary emails from non-priority records as additional emails
+    if (
+      record.recordId !== priorityRecordId &&
+      hasRecordFieldValue(record.value.primaryEmail) &&
+      record.value.primaryEmail !== primaryEmail
+    ) {
+      allAdditionalEmails.push(record.value.primaryEmail);
+    }
   });
 
   const uniqueAdditionalEmails = Array.from(new Set(allAdditionalEmails));
