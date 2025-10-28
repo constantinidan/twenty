@@ -1,0 +1,31 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: "Preserve all emails, phones, and links when merging records"
+overall_score: 4.3
+passed: false
+notes:
+  strengths: |
+    - Implementation preserves all emails, phones, and links from non-priority records
+    - Correctly handles deduplication using Set and uniqBy
+    - Integration tests have been updated with correct expectations
+    - Code structure is reasonable and follows existing patterns
+    - Properly checks for record field values before adding
+  weaknesses: |
+    - **CRITICAL**: Implementation uses conditional logic to exclude priority record's primary values, but ground truth collects ALL primary values from ALL records then filters them
+    - **CRITICAL**: Variable names not renamed (allAdditionalEmails/allPhones/allSecondaryLinks instead of allEmails/allPhones/allLinks)
+    - **CRITICAL**: Missing filter step to remove primaryEmail/primaryPhoneNumber/primaryLinkUrl from the collected values
+    - **CRITICAL**: Ground truth approach is more consistent: collect all, then deduplicate and filter. Current approach mixes collection logic with conditional skipping
+    - The approach difference may cause issues with complex merge scenarios where the same primary value appears multiple times
+    - Unit tests in merge-field-values.util.spec.ts NOT updated to match ground truth expectations (should expect primary email to be included in additionalEmails)
+  deviations:
+    negative:
+      - "Variable naming: Using 'allAdditionalEmails' instead of 'allEmails' makes the code less clear about collecting all values"
+      - "Collection logic: Ground truth collects ALL primary values from ALL records. Current implementation conditionally skips priority record's primary value"
+      - "Filtering: Ground truth filters out primaryEmail AFTER deduplication. Current implementation prevents adding it in the first place"
+      - "Unit tests: merge-field-values.util.spec.ts test expects only 'extra1@example.com', 'extra2@example.com' but should expect 'first@example.com', 'extra1@example.com', 'extra2@example.com' (missing the primary email from non-priority record)"
+      - "Unit tests: Missing test cases for PHONES and LINKS field types in merge-field-values.util.spec.ts"
+scores:
+  correctness: 4
+  completeness: 5
+  tests: 3
+  quality: 4
+  similarity: 3
