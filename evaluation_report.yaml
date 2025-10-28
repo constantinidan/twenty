@@ -1,0 +1,24 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: Preserve all emails, phones, and links when merging records
+overall_score: 0.0
+passed: false
+notes:
+  strengths: "None - no implementation was attempted"
+  weaknesses: "The coding agent made no changes whatsoever. All three core utility files (merge-emails-field-values.util.ts, merge-phones-field-values.util.ts, merge-links-field-values.util.ts) remain in their original state without the required modifications. No unit tests were added or updated. No integration tests were modified. The branch has a clean working tree with no commits made by the agent."
+  deviations:
+    negative:
+      - "Complete failure to implement any aspect of the PR - no code changes made"
+      - "Did not add logic to collect all primary values (emails, phones, links) from merged records"
+      - "Did not filter duplicates between primary and collected values"
+      - "Did not add unit tests for phones merging behavior"
+      - "Did not add unit tests for links merging behavior"
+      - "Did not update existing email merge unit test to expect primary email in additionals"
+      - "Did not update integration tests for companies to expect primary links in secondary lists"
+      - "Did not update integration tests for people to expect primary emails and phones in additional lists"
+      - "The issue requires preserving all data when merging (primary emails/phones/links from all records should become additionals), but agent did nothing"
+scores:
+  correctness: 0
+  completeness: 0
+  tests: 0
+  quality: 0
+  similarity: 0
