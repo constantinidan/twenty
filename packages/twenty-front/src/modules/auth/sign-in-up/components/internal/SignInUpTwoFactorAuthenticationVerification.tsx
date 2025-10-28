@@ -186,6 +186,7 @@ export const SignInUpTOTPVerification = () => {
   const { t } = useLingui();
 
   const { form } = useTwoFactorAuthenticationForm();
+  const { isSubmitting } = form.formState;
 
   const submitOTP = async (values: OTPFormValues) => {
     try {
@@ -257,7 +258,13 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        disabled={isSubmitting}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>
