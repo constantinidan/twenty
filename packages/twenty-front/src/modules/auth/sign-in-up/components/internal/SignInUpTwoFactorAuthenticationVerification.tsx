@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useState } from 'react';
 
 import { useAuth } from '@/auth/hooks/useAuth';
 import {
@@ -178,6 +179,7 @@ const StyledActionBackLinkContainer = styled.div`
 export const SignInUpTOTPVerification = () => {
   const { getAuthTokensFromOTP } = useAuth();
   const { enqueueErrorSnackBar } = useSnackBar();
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigateApp();
   const { readCaptchaToken } = useReadCaptchaToken();
@@ -188,6 +190,12 @@ export const SignInUpTOTPVerification = () => {
   const { form } = useTwoFactorAuthenticationForm();
 
   const submitOTP = async (values: OTPFormValues) => {
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
       const captchaToken = await readCaptchaToken();
 
@@ -198,6 +206,7 @@ export const SignInUpTOTPVerification = () => {
       await getAuthTokensFromOTP(values.otp, loginToken, captchaToken);
     } catch {
       form.setValue('otp', '');
+      setIsLoading(false);
 
       enqueueErrorSnackBar({
         message: t`Invalid verification code. Please try again.`,
@@ -209,7 +218,9 @@ export const SignInUpTOTPVerification = () => {
   };
 
   const handleBack = () => {
-    setSignInUpStep(SignInUpStep.TwoFactorAuthenticationProvision);
+    if (!isLoading) {
+      setSignInUpStep(SignInUpStep.TwoFactorAuthenticationProvision);
+    }
   };
 
   return (
@@ -257,7 +268,13 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        disabled={isLoading}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>
