@@ -139,11 +139,38 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - Use **Lingui** for internationalization
 - Components should be in their own directories with tests and stories
 
+### Code Quality and Refactoring Patterns
+When modifying existing utility functions or algorithms:
+1. **Prefer refactoring over patching** - Instead of adding conditional logic to existing loops, consider refactoring the entire algorithm for clarity
+2. **Collect then filter pattern** - When aggregating values from multiple sources:
+   - First, collect ALL values from all sources into a single array
+   - Then, apply deduplication and filtering in a separate step
+   - This is cleaner than conditional appending within loops
+3. **Semantic variable naming** - Variable names should accurately reflect their contents:
+   - If collecting all emails (not just additional), name it `allEmails` not `allAdditionalEmails`
+   - Rename variables when their purpose changes during refactoring
+4. **Separation of concerns** - Keep collection logic separate from filtering logic for better maintainability
+
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
 - **Integration tests** for critical backend workflows
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
+
+### Testing Requirements
+When modifying or adding functionality, you MUST:
+1. **Search for existing test files** - Use Glob to find `**/__tests__/*` or `*.spec.ts` files related to the code you're modifying
+2. **Add or update unit tests** - If a `*.spec.ts` file exists for the code you're modifying, update it with new test cases
+3. **Add or update integration tests** - For backend API changes, update relevant integration tests in `test/integration/`
+4. **Test hierarchy** - Write tests in this order:
+   - Unit tests first (fast, isolated, test individual functions/utilities)
+   - Integration tests second (test full workflows with database)
+   - E2E tests only for critical user paths
+5. **Comprehensive test coverage** - When adding new functionality to a utility function:
+   - Test the happy path
+   - Test edge cases (empty values, null, duplicates)
+   - Test the new behavior explicitly with dedicated test cases
+   - Update existing test expectations if behavior changes
 
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
