@@ -136,13 +136,13 @@ export const SETTINGS_NON_COMPOSITE_FIELD_TYPE_CONFIGS: SettingsNonCompositeFiel
     [FieldMetadataType.RAW_JSON]: {
       label: 'JSON',
       Icon: IllustrationIconJson,
-      exampleValues: [{ key: 'value1' }, { key: 'value2', key2: 'value2' }, {}],
+      exampleValues: [JSON.stringify({ key: 'value1' }) as any, JSON.stringify({ key: 'value2', key2: 'value2' }) as any, JSON.stringify({}) as any],
       category: 'Advanced',
     } as const satisfies SettingsFieldTypeConfig<FieldJsonValue>,
     [FieldMetadataType.ARRAY]: {
       label: 'Array',
       Icon: IllustrationIconArray,
       category: 'Advanced',
-      exampleValues: [['value1', 'value2'], ['value3'], []],
+      exampleValues: [JSON.stringify(['value1', 'value2']) as any, JSON.stringify(['value3']) as any, JSON.stringify([]) as any],
     } as const satisfies SettingsFieldTypeConfig<FieldArrayValue>,
   };
