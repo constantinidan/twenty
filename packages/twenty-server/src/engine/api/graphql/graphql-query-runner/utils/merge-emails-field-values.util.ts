@@ -31,19 +31,28 @@ export const mergeEmailsFieldValues = (
     primaryEmail = fallbackRecord?.value.primaryEmail || '';
   }
 
-  const allAdditionalEmails: string[] = [];
+  const allEmails: string[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Collect primary emails from all records
+    if (hasRecordFieldValue(record.value.primaryEmail)) {
+      allEmails.push(record.value.primaryEmail);
+    }
+
+    // Collect additional emails from all records
     const additionalEmails = parseArrayOrJsonStringToArray<string>(
       record.value.additionalEmails,
     );
 
-    allAdditionalEmails.push(
+    allEmails.push(
       ...additionalEmails.filter((email) => hasRecordFieldValue(email)),
     );
   });
 
-  const uniqueAdditionalEmails = Array.from(new Set(allAdditionalEmails));
+  // Deduplicate and filter out the selected primary email
+  const uniqueAdditionalEmails = Array.from(new Set(allEmails)).filter(
+    (email) => email !== primaryEmail,
+  );
 
   return {
     primaryEmail,

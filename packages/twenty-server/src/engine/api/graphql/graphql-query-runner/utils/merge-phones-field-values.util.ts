@@ -47,11 +47,21 @@ export const mergePhonesFieldValues = (
     }
   }
 
-  const allAdditionalPhones: AdditionalPhoneMetadata[] = [];
+  const allPhones: AdditionalPhoneMetadata[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Collect primary phones from all records
+    if (hasRecordFieldValue(record.value.primaryPhoneNumber)) {
+      allPhones.push({
+        number: record.value.primaryPhoneNumber,
+        countryCode: record.value.primaryPhoneCountryCode,
+        callingCode: record.value.primaryPhoneCallingCode,
+      });
+    }
+
+    // Collect additional phones from all records
     if (Array.isArray(record.value.additionalPhones)) {
-      allAdditionalPhones.push(
+      allPhones.push(
         ...record.value.additionalPhones.filter((phone) =>
           hasRecordFieldValue(phone.number),
         ),
@@ -59,7 +69,10 @@ export const mergePhonesFieldValues = (
     }
   });
 
-  const uniqueAdditionalPhones = uniqBy(allAdditionalPhones, 'number');
+  // Deduplicate by number and filter out the selected primary phone
+  const uniqueAdditionalPhones = uniqBy(allPhones, 'number').filter(
+    (phone) => phone.number !== primaryPhoneNumber,
+  );
 
   return {
     primaryPhoneNumber,
