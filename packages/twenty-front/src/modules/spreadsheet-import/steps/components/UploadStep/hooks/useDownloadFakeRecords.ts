@@ -67,11 +67,18 @@ export const useDownloadFakeRecords = () => {
 
           bodyRows.forEach((_, index) => {
             subFields.forEach(({ subFieldName }) => {
-              bodyRows[index].push(
+              const value =
                 exampleValues?.[index]?.[
                   subFieldName as keyof (typeof exampleValues)[typeof index]
-                ] || '',
-              );
+                ] || '';
+
+              // Convert arrays and objects to JSON strings for CSV export
+              const stringValue =
+                typeof value === 'object' && value !== null
+                  ? JSON.stringify(value)
+                  : value;
+
+              bodyRows[index].push(stringValue);
             });
           });
 

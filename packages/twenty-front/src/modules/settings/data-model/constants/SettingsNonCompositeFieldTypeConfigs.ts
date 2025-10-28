@@ -53,9 +53,9 @@ export const SETTINGS_NON_COMPOSITE_FIELD_TYPE_CONFIGS: SettingsNonCompositeFiel
       label: 'Unique ID',
       Icon: IllustrationIconUid,
       exampleValues: [
-        '00000000-0000-0000-0000-000000000000',
-        '00000000-0000-0000-0000-000000000001',
-        '00000000-0000-0000-0000-000000000002',
+        '20202020-1c25-4d02-bf25-6aeccf7ea419',
+        '20202020-7169-42cf-bc47-1b2d7a5c32b9',
+        '20202020-9fab-4e63-a7e1-e9f5e9e4e9e9',
       ],
       category: 'Advanced',
     } as const satisfies SettingsFieldTypeConfig<FieldUUidValue>,
