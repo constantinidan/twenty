@@ -101,11 +101,32 @@ packages/
 - **String literals over enums** (except for GraphQL enums)
 - **No 'any' type allowed**
 - **Event handlers preferred over useEffect** for state updates
+- **Explicit type annotations for useState** - Always provide type parameter to useState (e.g., `useState<boolean>(false)`) for clarity and maintainability
+- **Import ordering** - Place React imports (useState, useEffect, etc.) before third-party library imports, after emotion/styled imports
 
 ### State Management
 - **Recoil** for global state management
 - Component-specific state with React hooks
 - GraphQL cache managed by Apollo Client
+
+### Async Error Handling Patterns
+When managing loading states in async operations:
+- **Use try/catch/finally for cleanup** - Place state cleanup (like `setIsLoading(false)`) in the `finally` block, not the `catch` block
+- This ensures cleanup happens whether the operation succeeds or fails
+- Example pattern for form submissions:
+  ```typescript
+  const handleSubmit = async (values) => {
+    setIsLoading(true);
+    try {
+      await apiCall(values);
+      // Success handling
+    } catch (error) {
+      // Error handling (snackbar, form reset)
+    } finally {
+      setIsLoading(false); // Always cleanup
+    }
+  };
+  ```
 
 ### Backend Architecture
 - **NestJS modules** for feature organization
@@ -124,9 +145,17 @@ packages/
 
 ### Before Making Changes
 1. Always run linting and type checking after code changes
-2. Test changes with relevant test suites
-3. Ensure database migrations are properly structured
-4. Check that GraphQL schema changes are backward compatible
+2. **Write tests for your changes** - This is mandatory, not optional
+3. Test changes with relevant test suites and ensure all tests pass
+4. Ensure database migrations are properly structured
+5. Check that GraphQL schema changes are backward compatible
+
+### After Implementing a Fix
+1. **Add unit tests** that verify the fix works and prevents regression
+2. Run `npx nx test [package-name]` to ensure tests pass
+3. Run `npx nx lint [package-name]` to check code style
+4. Run `npx nx typecheck [package-name]` to verify type safety
+5. Review your changes to ensure they follow project conventions
 
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
@@ -139,6 +168,36 @@ packages/
 - **Integration tests** for critical backend workflows
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
+
+### Test Requirements for Bug Fixes
+When fixing bugs, ALWAYS add tests to verify the fix:
+- **User-facing bugs** (UI/UX issues) should include unit tests for the component logic
+- **Form submission bugs** should test loading states, button disabled states, and prevent duplicate submissions
+- **Race condition bugs** should test that the fix prevents the race condition scenario
+- Place tests in `__tests__` folder next to the file being tested (e.g., `hooks/__tests__/useMyHook.test.ts`)
+- Run tests with `npx nx test [package-name]` to verify they pass
+
+### Testing Patterns
+Frontend tests should follow these patterns:
+- **Use @testing-library/react** - `renderHook` for hooks, `render` for components
+- **Wrap with TestWrapper** - Provide RecoilRoot and MemoryRouter for components using Recoil state or routing
+- **Mock external dependencies** - Use jest.mock() for API calls, external services
+- **Test user interactions** - Use `fireEvent` or `userEvent` from @testing-library to simulate clicks, form inputs
+- **Test async behavior** - Use `waitFor` from @testing-library for async state updates
+- **Example test structure**:
+  ```typescript
+  describe('ComponentName', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should handle loading state correctly', async () => {
+      // Arrange: render component/hook
+      // Act: trigger action
+      // Assert: verify expected behavior
+    });
+  });
+  ```
 
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
