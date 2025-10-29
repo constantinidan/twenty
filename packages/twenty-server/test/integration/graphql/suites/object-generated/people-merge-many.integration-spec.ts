@@ -81,13 +81,14 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.emails.primaryEmail).toBe('john@example.com');
       expect(mergedPerson.emails.additionalEmails).toEqual(
         expect.arrayContaining([
+          'jane@example.com', // Jane's primary email preserved
           'john.alt@example.com',
           'john.work@example.com',
           'jane.alt@example.com',
           'jane.personal@example.com',
         ]),
       );
-      expect(mergedPerson.emails.additionalEmails).toHaveLength(4);
+      expect(mergedPerson.emails.additionalEmails).toHaveLength(5);
     });
 
     it('should merge emails with deduplication', async () => {
@@ -145,9 +146,10 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.emails.primaryEmail).toBe('alice@example.com');
       const additionalEmails = mergedPerson.emails.additionalEmails;
 
-      expect(additionalEmails).toHaveLength(3);
+      expect(additionalEmails).toHaveLength(4);
       expect(additionalEmails).toEqual(
         expect.arrayContaining([
+          'bob@example.com', // Bob's primary email preserved
           'shared@example.com',
           'alice.work@example.com',
           'bob.work@example.com',
@@ -213,10 +215,12 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.emails.primaryEmail).toBe('second@example.com');
       expect(mergedPerson.emails.additionalEmails).toEqual(
         expect.arrayContaining([
+          'first@example.com', // First person's primary email preserved
           'first.extra@example.com',
           'second.extra@example.com',
         ]),
       );
+      expect(mergedPerson.emails.additionalEmails).toHaveLength(3);
     });
 
     it('should handle dry run mode', async () => {
@@ -279,10 +283,12 @@ describe('people merge resolvers (integration)', () => {
       expect(dryRunResult.emails.primaryEmail).toBe('test1@example.com');
       expect(dryRunResult.emails.additionalEmails).toEqual(
         expect.arrayContaining([
+          'test2@example.com', // Test2's primary email preserved
           'test1.extra@example.com',
           'test2.extra@example.com',
         ]),
       );
+      expect(dryRunResult.emails.additionalEmails).toHaveLength(3);
 
       const findOriginalPersons = findOneOperationFactory({
         objectMetadataSingularName: 'person',
@@ -401,22 +407,24 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.phones.primaryPhoneCallingCode).toBe('+1');
       expect(mergedPerson.phones.additionalPhones).toEqual(
         expect.arrayContaining([
+          expect.objectContaining({ number: '4445556789' }), // Bob's primary phone preserved
           expect.objectContaining({ number: '5559876543' }),
           expect.objectContaining({ number: '4441112222' }),
         ]),
       );
-      expect(mergedPerson.phones.additionalPhones).toHaveLength(2);
+      expect(mergedPerson.phones.additionalPhones).toHaveLength(3);
 
       expect(mergedPerson.whatsapp.primaryPhoneNumber).toBe('810407803');
       expect(mergedPerson.whatsapp.primaryPhoneCountryCode).toBe('FR');
       expect(mergedPerson.whatsapp.primaryPhoneCallingCode).toBe('+33');
       expect(mergedPerson.whatsapp.additionalPhones).toEqual(
         expect.arrayContaining([
+          expect.objectContaining({ number: '987654321' }), // Bob's primary whatsapp preserved
           expect.objectContaining({ number: '8104078034' }),
           expect.objectContaining({ number: '123456789' }),
         ]),
       );
-      expect(mergedPerson.whatsapp.additionalPhones).toHaveLength(2);
+      expect(mergedPerson.whatsapp.additionalPhones).toHaveLength(3);
     });
   });
 });

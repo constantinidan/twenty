@@ -47,12 +47,27 @@ export const mergeLinksFieldValues = (
   const allSecondaryLinks: LinkMetadata[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Add primary link from this record if it's not the chosen primary
+    if (
+      hasRecordFieldValue(record.value.primaryLinkUrl) &&
+      record.value.primaryLinkUrl !== primaryLinkUrl
+    ) {
+      allSecondaryLinks.push({
+        url: record.value.primaryLinkUrl,
+        label: record.value.primaryLinkLabel,
+      });
+    }
+
+    // Add secondary links from this record
     const secondaryLinks = parseArrayOrJsonStringToArray<LinkMetadata>(
       record.value.secondaryLinks,
     );
 
     allSecondaryLinks.push(
-      ...secondaryLinks.filter((link) => hasRecordFieldValue(link.url)),
+      ...secondaryLinks.filter(
+        (link) =>
+          hasRecordFieldValue(link.url) && link.url !== primaryLinkUrl,
+      ),
     );
   });
 

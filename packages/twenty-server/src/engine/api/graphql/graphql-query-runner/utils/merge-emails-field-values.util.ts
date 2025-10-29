@@ -34,12 +34,23 @@ export const mergeEmailsFieldValues = (
   const allAdditionalEmails: string[] = [];
 
   recordsWithValues.forEach((record) => {
+    // Add primary email from this record if it's not the chosen primary
+    if (
+      hasRecordFieldValue(record.value.primaryEmail) &&
+      record.value.primaryEmail !== primaryEmail
+    ) {
+      allAdditionalEmails.push(record.value.primaryEmail);
+    }
+
+    // Add additional emails from this record
     const additionalEmails = parseArrayOrJsonStringToArray<string>(
       record.value.additionalEmails,
     );
 
     allAdditionalEmails.push(
-      ...additionalEmails.filter((email) => hasRecordFieldValue(email)),
+      ...additionalEmails.filter(
+        (email) => hasRecordFieldValue(email) && email !== primaryEmail,
+      ),
     );
   });
 
