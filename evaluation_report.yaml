@@ -1,0 +1,31 @@
+ground_truth: https://github.com/twentyhq/twenty/pull/15224
+issue: Preserve all emails, phones, and links when merging records
+overall_score: 7.1
+passed: true
+notes:
+  strengths: |
+    - Correctly identifies and solves the core problem: primary values from non-priority records were being lost during merge
+    - Implements the fix in all three affected utility files (emails, phones, links)
+    - Updates integration tests to verify the new behavior
+    - Maintains deduplication logic correctly
+    - Code is clean and follows the existing patterns
+    - Handles edge cases (checks if value is different from primaryEmail/Phone/Link before adding)
+  weaknesses: |
+    - Missing unit tests: The ground truth PR adds comprehensive unit tests in merge-field-values.util.spec.ts (106 new lines of unit tests covering phones and links merging)
+    - Integration test updates are incomplete: Missing some test assertions that exist in ground truth (e.g., first-priority link in companies merge test)
+    - Different implementation approach: Uses a conditional check to exclude priority record (record.recordId !== priorityRecordId) instead of collecting ALL values and filtering at the end
+  deviations:
+    neutral:
+      - "Implementation uses conditional filtering approach (if record.recordId !== priorityRecordId) vs ground truth's collect-all-then-filter approach"
+      - "Both approaches achieve the same functional outcome with proper deduplication"
+      - "Agent's approach may be slightly more efficient (fewer operations) but ground truth is more uniform/consistent in handling all records the same way"
+    negative:
+      - "Missing unit tests for phones and links fields in merge-field-values.util.spec.ts - ground truth adds 106 lines of unit tests"
+      - "Integration test updates are incomplete - missing assertion for 'first-priority' link URL in one test case"
+      - "Unit test for emails field was not updated to reflect new behavior (should include 'first@example.com' in additionalEmails)"
+scores:
+  correctness: 9
+  completeness: 6
+  tests: 4
+  quality: 9
+  similarity: 7
