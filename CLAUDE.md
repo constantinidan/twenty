@@ -142,6 +142,9 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
 - **Integration tests** for critical backend workflows
+  - When modifying shared utilities (merge, validation, etc.), check for integration tests across ALL entity types (people, companies, etc.)
+  - Pattern: `test/integration/graphql/suites/object-generated/*-merge-many.integration-spec.ts` for merge functionality
+  - Multiple entities often share the same underlying logic and should have parallel test updates
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
 
