@@ -141,7 +141,12 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
+  - When modifying utility functions or business logic, look for existing unit test files (typically in `__tests__` directories)
+  - Add or update unit tests to cover new behavior, especially for complex logic changes
+  - Unit test files follow the pattern: `filename.util.spec.ts` or `__tests__/filename.spec.ts`
 - **Integration tests** for critical backend workflows
+  - Located in `packages/twenty-server/test/integration/graphql/suites/`
+  - Always update integration tests when changing GraphQL resolvers or merge logic
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
 
