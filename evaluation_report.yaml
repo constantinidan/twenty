@@ -1,0 +1,28 @@
+ground_truth_url: https://github.com/twentyhq/twenty/pull/15109
+issue_url: https://github.com/twentyhq/core-team-issues/issues/1324
+overall_score: 3.3
+passed: false
+notes:
+  strengths: "The agent identified a legitimate issue with morph relation identifier field resolution and implemented a clean, well-documented fix that makes morph relations use proper label and image identifier fields instead of hardcoding { id: true, name: true }. The code quality is good with proper error handling and follows the existing pattern used for regular relations."
+  weaknesses: "The agent's solution addresses a different aspect of the problem than what the ground truth PR fixes. The issue #1324 is specifically about the Helper field not rendering consistently on show pages, which the ground truth fixes by updating useOpenMorphRelationOneToManyFieldInput.tsx to use the correct recordPickerInstanceId. The agent did not implement any of the core show page components (RecordDetailMorphRelationSection, dropdowns, etc.) that the ground truth added. The fix is incomplete - it only addresses GraphQL field generation but doesn't add the UI components needed for morph relations to actually appear on show pages."
+  deviations:
+    negative:
+      - "Missing all 7 new morph relation components that ground truth created (RecordDetailMorphRelationSection.tsx, RecordDetailMorphRelationSectionDropdown.tsx, RecordDetailMorphRelationSectionDropdownManyToOne.tsx, RecordDetailMorphRelationSectionDropdownOneToMany.tsx, useGetMorphRelationRelatedRecordsWithObjectNameSingular.ts)"
+      - "Did not update RecordFieldList.tsx to conditionally render morph relation sections vs regular relation sections"
+      - "Did not update useFieldListFieldMetadataItems.ts to properly filter and permission-check morph relations"
+      - "Did not fix the core issue mentioned in PR description: useOpenMorphRelationOneToManyFieldInput.tsx not using correct recordPickerInstanceId (line 36-40)"
+      - "Did not update RecordDetailRelationRecordsList.tsx to accept recordsWithObjectNameSingular prop instead of relationRecords"
+      - "Did not update RecordDetailRelationRecordsListItem.tsx to handle morph relation detachment logic"
+      - "Did not update multiple input components to pass fieldMetadataItem and objectMetadataItem to useAddNewRecordAndOpenRightDrawer"
+      - "Did not update usePersistField.ts to handle morph relation many-to-one persistence separately"
+      - "Missing updates to prefillRecord.ts for morph relation prefilling"
+      - "No test coverage added (ground truth updated Storybook stories)"
+    neutral:
+      - "Agent focused on GraphQL query generation layer while ground truth focused on UI component layer - both are valid concerns but address different problems"
+      - "Agent's change is more surgical and focused, but this means it's incomplete for the full feature"
+scores:
+  correctness: 3
+  completeness: 2
+  tests: 0
+  quality: 7
+  similarity: 2
