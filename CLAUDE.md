@@ -127,6 +127,13 @@ packages/
 
 IMPORTANT: Use Context7 for code generation, setup or configuration steps, or library/API documentation. Automatically use the Context7 MCP tools to resolve library IDs and get library docs without waiting for explicit requests.
 
+### Understanding Tasks and Requirements
+When working on an issue or PR:
+1. **For closed/merged PRs or issues**: Use GitHub MCP tools to examine the actual implementation commits and diffs to understand what was done
+2. **For vague titles**: Don't make assumptions - investigate the actual changes, PR description, or related commits to understand the real requirement
+3. **When unsure**: Ask clarifying questions or look for related PRs/issues that provide context
+4. **Refactoring vs New Features**: Check if the task is about modifying existing code patterns vs adding new functionality - the approach differs significantly
+
 ### Before Making Changes
 1. Always run linting and type checking after code changes
 2. Test changes with relevant test suites
