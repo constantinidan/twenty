@@ -110,6 +110,18 @@ packages/
 - Component-specific state with React hooks
 - GraphQL cache managed by Apollo Client
 
+### Frontend Architecture Patterns
+- **Show pages/Record detail pages** use a modular component architecture:
+  - `RecordDetail*Section` components for different field types (relations, fields, etc.)
+  - Section-specific dropdowns and list components for interactions
+  - Custom hooks for field-specific logic (e.g., `useOpen*FieldInput`, `useGet*RelatedRecords`)
+- **Field type support** requires implementation across multiple modules:
+  - Display components in `record-field/ui/`
+  - Input components in `record-field/ui/meta-types/input/`
+  - Field list components in `record-show/record-detail-section/`
+  - Type-specific hooks and utilities
+- **When adding support for a new field type**, check how existing similar field types are implemented and replicate the pattern across all layers
+
 ### Backend Architecture
 - **NestJS modules** for feature organization
 - **TypeORM** for database ORM with PostgreSQL
@@ -132,6 +144,16 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 2. Test changes with relevant test suites
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
+
+### Debugging UI Issues
+When investigating UI display issues (e.g., fields showing as "Empty" or not rendering):
+1. **Start with the component layer** - Check if UI components exist for the field type
+2. **Follow existing patterns** - Look at how similar field types are rendered (e.g., if fixing morph relations, study how regular relations are displayed)
+3. **Check the full stack** - UI issues often require changes across multiple layers:
+   - Presentation: Display components, field renderers, dropdowns
+   - Logic: Hooks, state management, event handlers
+   - Data: GraphQL queries, type definitions
+4. **Verify component registration** - Ensure new field types are properly registered in field lists and show page components
 
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
