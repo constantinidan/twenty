@@ -138,6 +138,7 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - Follow **Nx** workspace conventions for imports
 - Use **Lingui** for internationalization
 - Components should be in their own directories with tests and stories
+- **Data collection pattern**: When aggregating values from multiple sources (e.g., merging records), prefer the "collect all, then filter" approach over conditional checks during collection. This produces cleaner, more maintainable code with fewer branches
 
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
