@@ -127,6 +127,17 @@ packages/
 
 IMPORTANT: Use Context7 for code generation, setup or configuration steps, or library/API documentation. Automatically use the Context7 MCP tools to resolve library IDs and get library docs without waiting for explicit requests.
 
+### Understanding Ambiguous Tasks
+When given a vague task description (e.g., "Common - Throttle update + Metrics"):
+1. **Search for context first**: Look for recent PRs, commits, or issues with similar titles using GitHub search
+2. **Identify the domain**: Understand what "Common" refers to:
+   - "Common API" = GraphQL/REST API layer (`engine/api/common/`)
+   - "Common" in other contexts might refer to shared utilities
+3. **Find existing implementations**: Search for relevant files before implementing
+   - For API throttling: check `common-base-query-runner.service.ts`, `throttler.service.ts`
+   - For sync throttling: check messaging/calendar modules
+4. **Verify scope**: Ensure you're working on the correct feature area
+
 ### Before Making Changes
 1. Always run linting and type checking after code changes
 2. Test changes with relevant test suites
