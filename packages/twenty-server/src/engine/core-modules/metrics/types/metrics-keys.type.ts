@@ -29,4 +29,10 @@ export enum MetricsKeys {
   CronJobDeletedWorkspace = 'cron-job/deleted-workspace',
   JobWebhookCallCompleted = 'job/webhook-call-completed',
   SignUpSuccess = 'sign-up/success',
+  CommonUpdateMany = 'common-query-runner/update-many',
+  CommonDeleteMany = 'common-query-runner/delete-many',
+  CommonRestoreMany = 'common-query-runner/restore-many',
+  CommonUpdateManyRecordsAffected = 'common-query-runner/update-many/records-affected',
+  CommonDeleteManyRecordsAffected = 'common-query-runner/delete-many/records-affected',
+  CommonRestoreManyRecordsAffected = 'common-query-runner/restore-many/records-affected',
 }

@@ -31,6 +31,7 @@ import { WorkspacePreQueryHookPayload } from 'src/engine/api/graphql/workspace-q
 import { WorkspaceQueryHookService } from 'src/engine/api/graphql/workspace-query-runner/workspace-query-hook/workspace-query-hook.service';
 import { ApiKeyRoleService } from 'src/engine/core-modules/api-key/api-key-role.service';
 import { AuthContext } from 'src/engine/core-modules/auth/types/auth-context.type';
+import { MetricsService } from 'src/engine/core-modules/metrics/metrics.service';
 import { ThrottlerService } from 'src/engine/core-modules/throttler/throttler.service';
 import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twenty-config.service';
 import { type PermissionFlagType } from 'src/engine/metadata-modules/permissions/constants/permission-flag-type.constants';
@@ -77,6 +78,8 @@ export abstract class CommonBaseQueryRunnerService<
   protected readonly throttlerService: ThrottlerService;
   @Inject()
   protected readonly twentyConfigService: TwentyConfigService;
+  @Inject()
+  protected readonly metricsService: MetricsService;
 
   protected abstract readonly operationName: CommonQueryNames;
 
@@ -360,6 +363,32 @@ export abstract class CommonBaseQueryRunnerService<
       1,
       longConfig.maxTokens,
       longConfig.timeWindow,
+    );
+  }
+
+  protected async throttleByRecordCount(
+    workspaceId: string,
+    recordCount: number,
+  ): Promise<void> {
+    // Only throttle if record count is significant
+    if (recordCount <= 1) {
+      return;
+    }
+
+    const throttleConfig = {
+      key: `api:throttler:${workspaceId}-bulk-operation`,
+      maxTokens:
+        this.twentyConfigService.get('API_RATE_LIMITING_SHORT_LIMIT') * 10,
+      timeWindow: this.twentyConfigService.get(
+        'API_RATE_LIMITING_SHORT_TTL_IN_MS',
+      ),
+    };
+
+    await this.throttlerService.tokenBucketThrottle(
+      throttleConfig.key,
+      recordCount,
+      throttleConfig.maxTokens,
+      throttleConfig.timeWindow,
     );
   }
 }

@@ -8,6 +8,7 @@ import { FindOptionsRelations, ObjectLiteral } from 'typeorm';
 import { WorkspaceAuthContext } from 'src/engine/api/common/interfaces/workspace-auth-context.interface';
 
 import { CommonBaseQueryRunnerService } from 'src/engine/api/common/common-query-runners/common-base-query-runner.service';
+import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
 import {
   CommonQueryRunnerException,
   CommonQueryRunnerExceptionCode,
@@ -56,6 +57,17 @@ export class CommonDeleteManyQueryRunnerService extends CommonBaseQueryRunnerSer
       args.filter,
     );
 
+    // Get count of records that will be affected BEFORE the delete
+    const recordCount = await queryBuilder.getCount();
+
+    // Apply record-based throttling
+    await this.throttleByRecordCount(authContext.workspace.id, recordCount);
+
+    // Track the operation start
+    await this.metricsService.incrementCounter({
+      key: MetricsKeys.CommonDeleteMany,
+    });
+
     const columnsToReturn = buildColumnsToReturn({
       select: args.selectedFieldsResult.select,
       relations: args.selectedFieldsResult.relations,
@@ -69,6 +81,15 @@ export class CommonDeleteManyQueryRunnerService extends CommonBaseQueryRunnerSer
       .execute();
 
     const deletedRecords = deletedObjectRecords.generatedMaps as ObjectRecord[];
+
+    // Track the number of records affected
+    await this.metricsService.incrementCounter({
+      key: MetricsKeys.CommonDeleteManyRecordsAffected,
+      attributes: {
+        recordCount: deletedRecords.length,
+        objectName: objectMetadataItemWithFieldMaps.nameSingular,
+      },
+    });
 
     if (isDefined(args.selectedFieldsResult.relations)) {
       await this.processNestedRelationsHelper.processNestedRelations({

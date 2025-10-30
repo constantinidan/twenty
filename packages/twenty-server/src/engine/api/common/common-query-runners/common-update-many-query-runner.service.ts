@@ -8,6 +8,7 @@ import { FindOptionsRelations, ObjectLiteral } from 'typeorm';
 import { WorkspaceAuthContext } from 'src/engine/api/common/interfaces/workspace-auth-context.interface';
 
 import { CommonBaseQueryRunnerService } from 'src/engine/api/common/common-query-runners/common-base-query-runner.service';
+import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
 import {
   CommonQueryRunnerException,
   CommonQueryRunnerExceptionCode,
@@ -56,6 +57,17 @@ export class CommonUpdateManyQueryRunnerService extends CommonBaseQueryRunnerSer
       args.filter,
     );
 
+    // Get count of records that will be affected BEFORE the update
+    const recordCount = await queryBuilder.getCount();
+
+    // Apply record-based throttling
+    await this.throttleByRecordCount(authContext.workspace.id, recordCount);
+
+    // Track the operation start
+    await this.metricsService.incrementCounter({
+      key: MetricsKeys.CommonUpdateMany,
+    });
+
     const columnsToReturn = buildColumnsToReturn({
       select: args.selectedFieldsResult.select,
       relations: args.selectedFieldsResult.relations,
@@ -70,6 +82,15 @@ export class CommonUpdateManyQueryRunnerService extends CommonBaseQueryRunnerSer
       .execute();
 
     const updatedRecords = updatedObjectRecords.generatedMaps as ObjectRecord[];
+
+    // Track the number of records affected
+    await this.metricsService.incrementCounter({
+      key: MetricsKeys.CommonUpdateManyRecordsAffected,
+      attributes: {
+        recordCount: updatedRecords.length,
+        objectName: objectMetadataItemWithFieldMaps.nameSingular,
+      },
+    });
 
     if (isDefined(args.selectedFieldsResult.relations)) {
       await this.processNestedRelationsHelper.processNestedRelations({
