@@ -117,6 +117,7 @@ describe('SignInUpService', () => {
               email: 'test@test.com',
               isEmailVerified: true,
             } as User),
+            findUserByEmail: jest.fn(),
           },
         },
         {
@@ -393,5 +394,64 @@ describe('SignInUpService', () => {
     expect(result.user).toBeDefined();
     expect(WorkspaceRepository.create).toHaveBeenCalled();
     expect(WorkspaceRepository.save).toHaveBeenCalled();
+  });
+
+  it('should throw error when user already exists in signUpWithoutWorkspace', async () => {
+    const userService = {
+      findUserByEmail: jest.fn().mockResolvedValue({
+        id: 'existing-user-id',
+        email: 'existing@example.com',
+      } as User),
+    };
+
+    (service as any).userService = userService;
+
+    await expect(() =>
+      service.signUpWithoutWorkspace(
+        { email: 'existing@example.com' },
+        { provider: AuthProviderEnum.Password, password: 'password' },
+      ),
+    ).rejects.toThrow(
+      new AuthException(
+        'User already exist',
+        AuthExceptionCode.USER_ALREADY_EXIST,
+      ),
+    );
+
+    expect(userService.findUserByEmail).toHaveBeenCalledWith(
+      'existing@example.com',
+    );
+  });
+
+  it('should successfully create user when user does not exist in signUpWithoutWorkspace', async () => {
+    const userService = {
+      findUserByEmail: jest.fn().mockResolvedValue(null),
+    };
+
+    const saveNewUser = jest.fn().mockResolvedValue({
+      id: 'new-user-id',
+      email: 'new@example.com',
+    } as User);
+
+    (service as any).userService = userService;
+    (service as any).saveNewUser = saveNewUser;
+    (service as any).computePartialUserFromUserPayload = jest
+      .fn()
+      .mockResolvedValue({
+        email: 'new@example.com',
+      });
+    (service as any).setDefaultImpersonateAndAccessFullAdminPanel = jest
+      .fn()
+      .mockResolvedValue({});
+
+    const result = await service.signUpWithoutWorkspace(
+      { email: 'new@example.com' },
+      { provider: AuthProviderEnum.Password, password: 'password' },
+    );
+
+    expect(userService.findUserByEmail).toHaveBeenCalledWith('new@example.com');
+    expect(result).toBeDefined();
+    expect(result.id).toBe('new-user-id');
+    expect(saveNewUser).toHaveBeenCalled();
   });
 });
