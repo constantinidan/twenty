@@ -3,23 +3,28 @@ import { MESSAGING_THROTTLE_DURATION } from 'src/modules/messaging/message-impor
 export const isThrottled = (
   syncStageStartedAt: string | null,
   throttleFailureCount: number,
+  throttleDuration: number = MESSAGING_THROTTLE_DURATION,
 ): boolean => {
   if (!syncStageStartedAt) {
     return false;
   }
 
   return (
-    computeThrottlePauseUntil(syncStageStartedAt, throttleFailureCount) >
-    new Date()
+    computeThrottlePauseUntil(
+      syncStageStartedAt,
+      throttleFailureCount,
+      throttleDuration,
+    ) > new Date()
   );
 };
 
 const computeThrottlePauseUntil = (
   syncStageStartedAt: string,
   throttleFailureCount: number,
+  throttleDuration: number,
 ): Date => {
   return new Date(
     new Date(syncStageStartedAt).getTime() +
-      MESSAGING_THROTTLE_DURATION * Math.pow(2, throttleFailureCount - 1),
+      throttleDuration * Math.pow(2, throttleFailureCount - 1),
   );
 };

@@ -1,5 +1,7 @@
 import { Scope } from '@nestjs/common';
 
+import { MetricsService } from 'src/engine/core-modules/metrics/metrics.service';
+import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
 import { Process } from 'src/engine/core-modules/message-queue/decorators/process.decorator';
 import { Processor } from 'src/engine/core-modules/message-queue/decorators/processor.decorator';
 import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
@@ -25,6 +27,7 @@ export class MessagingMessagesImportJob {
     private readonly messagingMessagesImportService: MessagingMessagesImportService,
     private readonly messagingMonitoringService: MessagingMonitoringService,
     private readonly twentyORMManager: TwentyORMManager,
+    private readonly metricsService: MetricsService,
   ) {}
 
   @Process(MessagingMessagesImportJob.name)
@@ -69,6 +72,11 @@ export class MessagingMessagesImportJob {
         messageChannel.throttleFailureCount,
       )
     ) {
+      await this.metricsService.incrementCounter({
+        key: MetricsKeys.MessageChannelSyncJobThrottled,
+        eventId: messageChannelId,
+      });
+
       return;
     }
 

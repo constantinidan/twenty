@@ -76,11 +76,29 @@ export class MessageChannelSyncStatusService {
         'messageChannel',
       );
 
+    const messageChannelsToReset = await messageChannelRepository.find({
+      where: {
+        id: Any(messageChannelIds),
+      },
+      select: ['id', 'throttleFailureCount'],
+    });
+
+    const throttledChannelIds = messageChannelsToReset
+      .filter((channel) => channel.throttleFailureCount > 0)
+      .map((channel) => channel.id);
+
     await messageChannelRepository.update(messageChannelIds, {
       syncCursor: '',
       syncStageStartedAt: null,
       throttleFailureCount: 0,
     });
+
+    if (throttledChannelIds.length > 0) {
+      await this.metricsService.batchIncrementCounter({
+        key: MetricsKeys.MessageChannelSyncJobThrottleRecovered,
+        eventIds: throttledChannelIds,
+      });
+    }
 
     await this.scheduleMessageListFetch(messageChannelIds);
   }
@@ -129,6 +147,17 @@ export class MessageChannelSyncStatusService {
         'messageChannel',
       );
 
+    const messageChannelsToComplete = await messageChannelRepository.find({
+      where: {
+        id: Any(messageChannelIds),
+      },
+      select: ['id', 'throttleFailureCount'],
+    });
+
+    const throttledChannelIds = messageChannelsToComplete
+      .filter((channel) => channel.throttleFailureCount > 0)
+      .map((channel) => channel.id);
+
     await messageChannelRepository.update(messageChannelIds, {
       syncStatus: MessageChannelSyncStatus.ACTIVE,
       syncStage: MessageChannelSyncStage.MESSAGE_LIST_FETCH_PENDING,
@@ -136,6 +165,13 @@ export class MessageChannelSyncStatusService {
       syncStageStartedAt: null,
       syncedAt: new Date().toISOString(),
     });
+
+    if (throttledChannelIds.length > 0) {
+      await this.metricsService.batchIncrementCounter({
+        key: MetricsKeys.MessageChannelSyncJobThrottleRecovered,
+        eventIds: throttledChannelIds,
+      });
+    }
 
     await this.metricsService.batchIncrementCounter({
       key: MetricsKeys.MessageChannelSyncJobActive,

@@ -80,11 +80,29 @@ export class CalendarChannelSyncStatusService {
         'calendarChannel',
       );
 
+    const calendarChannelsToReset = await calendarChannelRepository.find({
+      where: {
+        id: Any(calendarChannelIds),
+      },
+      select: ['id', 'throttleFailureCount'],
+    });
+
+    const throttledChannelIds = calendarChannelsToReset
+      .filter((channel) => channel.throttleFailureCount > 0)
+      .map((channel) => channel.id);
+
     await calendarChannelRepository.update(calendarChannelIds, {
       syncCursor: '',
       syncStageStartedAt: null,
       throttleFailureCount: 0,
     });
+
+    if (throttledChannelIds.length > 0) {
+      await this.metricsService.batchIncrementCounter({
+        key: MetricsKeys.CalendarEventSyncJobThrottleRecovered,
+        eventIds: throttledChannelIds,
+      });
+    }
 
     await this.scheduleCalendarEventListFetch(calendarChannelIds);
   }
@@ -147,6 +165,17 @@ export class CalendarChannelSyncStatusService {
         'calendarChannel',
       );
 
+    const calendarChannelsToComplete = await calendarChannelRepository.find({
+      where: {
+        id: Any(calendarChannelIds),
+      },
+      select: ['id', 'throttleFailureCount'],
+    });
+
+    const throttledChannelIds = calendarChannelsToComplete
+      .filter((channel) => channel.throttleFailureCount > 0)
+      .map((channel) => channel.id);
+
     await calendarChannelRepository.update(calendarChannelIds, {
       syncStage: CalendarChannelSyncStage.CALENDAR_EVENT_LIST_FETCH_PENDING,
       syncStatus: CalendarChannelSyncStatus.ACTIVE,
@@ -154,6 +183,13 @@ export class CalendarChannelSyncStatusService {
       syncStageStartedAt: null,
       syncedAt: new Date().toISOString(),
     });
+
+    if (throttledChannelIds.length > 0) {
+      await this.metricsService.batchIncrementCounter({
+        key: MetricsKeys.CalendarEventSyncJobThrottleRecovered,
+        eventIds: throttledChannelIds,
+      });
+    }
 
     await this.scheduleCalendarEventListFetch(calendarChannelIds);
 

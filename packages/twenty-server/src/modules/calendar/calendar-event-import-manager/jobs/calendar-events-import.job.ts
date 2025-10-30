@@ -1,9 +1,12 @@
 import { Scope } from '@nestjs/common';
 
+import { MetricsService } from 'src/engine/core-modules/metrics/metrics.service';
+import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
 import { Process } from 'src/engine/core-modules/message-queue/decorators/process.decorator';
 import { Processor } from 'src/engine/core-modules/message-queue/decorators/processor.decorator';
 import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
 import { TwentyORMManager } from 'src/engine/twenty-orm/twenty-orm.manager';
+import { CALENDAR_THROTTLE_DURATION } from 'src/modules/calendar/calendar-event-import-manager/constants/calendar-throttle-duration';
 import { CalendarEventsImportService } from 'src/modules/calendar/calendar-event-import-manager/services/calendar-events-import.service';
 import {
   CalendarChannelSyncStage,
@@ -24,6 +27,7 @@ export class CalendarEventsImportJob {
   constructor(
     private readonly calendarEventsImportService: CalendarEventsImportService,
     private readonly twentyORMManager: TwentyORMManager,
+    private readonly metricsService: MetricsService,
   ) {}
 
   @Process(CalendarEventsImportJob.name)
@@ -50,8 +54,14 @@ export class CalendarEventsImportJob {
       isThrottled(
         calendarChannel.syncStageStartedAt,
         calendarChannel.throttleFailureCount,
+        CALENDAR_THROTTLE_DURATION,
       )
     ) {
+      await this.metricsService.incrementCounter({
+        key: MetricsKeys.CalendarEventSyncJobThrottled,
+        eventId: calendarChannelId,
+      });
+
       return;
     }
 
