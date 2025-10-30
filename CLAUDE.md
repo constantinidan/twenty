@@ -145,6 +145,11 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
 
+#### Test Coverage Guidelines
+- When implementing changes to utility functions that handle multiple data types (e.g., emails, phones, links), ensure unit tests cover all supported types
+- When fixing bugs in shared functionality used across multiple object types (e.g., People and Companies), verify integration tests are updated for all affected objects
+- Check existing test files in the same directory for patterns to follow
+
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
 - `tsconfig.base.json` - Base TypeScript configuration
