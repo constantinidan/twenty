@@ -109,6 +109,7 @@ export class ConfigCommand {
 
   private printConfig(title: string, config: Record<string, any>): void {
     console.log(chalk.blue(title + ':'));
+    console.log(chalk.gray('  Config file: ~/.twenty/config.json\n'));
 
     const keys = Object.keys(config);
     if (keys.length === 0) {
@@ -132,7 +133,7 @@ export class ConfigCommand {
     });
 
     // Show available environment variables
-    console.log(chalk.gray('\nEnvironment variables:'));
+    console.log(chalk.gray('\nEnvironment variables (override config):'));
     console.log(chalk.gray('  TWENTY_API_URL - Override API URL'));
     console.log(chalk.gray('  TWENTY_API_KEY - Override API key'));
     console.log(chalk.gray('  TWENTY_DEFAULT_APP - Override default app'));

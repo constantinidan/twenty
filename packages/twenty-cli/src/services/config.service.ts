@@ -1,4 +1,3 @@
-import { config as loadDotenv } from 'dotenv';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
@@ -9,24 +8,6 @@ export class ConfigService {
 
   constructor() {
     this.configPath = path.join(os.homedir(), '.twenty', 'config.json');
-    this.loadEnvironmentVariables();
-  }
-
-  private loadEnvironmentVariables(): void {
-    // Load local .env file if it exists in current working directory
-    const localEnvPath = path.join(
-      process.cwd(),
-      process.env.NODE_ENV === 'test' ? '.env.e2e' : '.env',
-    );
-    if (fs.existsSync(localEnvPath)) {
-      loadDotenv({ path: localEnvPath });
-    }
-
-    // Also try to load from user's home .twenty directory
-    const userEnvPath = path.join(os.homedir(), '.twenty', '.env');
-    if (fs.existsSync(userEnvPath)) {
-      loadDotenv({ path: userEnvPath });
-    }
   }
 
   async getConfig(): Promise<TwentyConfig> {
