@@ -1,0 +1,31 @@
+ground_truth_url: https://github.com/twentyhq/twenty/pull/15413
+issue_url:
+overall_score: 3.2
+passed: false
+notes:
+  strengths: "The agent successfully injected MetricsService into CommonBaseQueryRunnerService and added the MetricsModule import to core-common-api.module.ts. It also added new metrics keys and implemented some metrics tracking."
+  weaknesses: "The agent implemented a COMPLETELY DIFFERENT solution than the ground truth. The ground truth focused on: (1) refactoring existing throttleQueryExecution to handle rate limiting with proper error tracking, (2) renaming tokenBucketThrottle to tokenBucketThrottleOrThrow, (3) removing old throttler from metadata module, and (4) reducing API_RATE_LIMITING_LONG_LIMIT from 1000 to 100. The agent instead added NEW throttling for bulk operations (updateMany, deleteMany, restoreMany) that wasn't required and missed all the core changes."
+  deviations:
+    positive:
+      - "Added comprehensive metrics tracking for bulk operations with record counts"
+    neutral:
+      - "Added MetricsService injection to CommonBaseQueryRunnerService (required in both approaches)"
+      - "Added MetricsModule to core-common-api.module.ts (required in both approaches)"
+    negative:
+      - "CRITICAL: Did not refactor throttleQueryExecution to accept authContext instead of workspaceId"
+      - "CRITICAL: Did not add try-catch block to throttleQueryExecution with metrics tracking on rate limit errors"
+      - "CRITICAL: Did not add check for isDefined(authContext.apiKey) to only throttle API key requests"
+      - "CRITICAL: Did not rename tokenBucketThrottle to tokenBucketThrottleOrThrow in throttler.service.ts"
+      - "CRITICAL: Did not update throttler.service.spec.ts to reflect method rename"
+      - "CRITICAL: Did not remove useThrottler plugin from metadata.module-factory.ts"
+      - "CRITICAL: Did not reduce API_RATE_LIMITING_LONG_LIMIT from 1000 to 100 in config-variables.ts"
+      - "CRITICAL: Did not add CommonApiQueryRateLimited metrics key (added wrong keys instead)"
+      - "CRITICAL: Added incorrect metrics keys (CommonUpdateMany, CommonDeleteMany, etc.) that were not in ground truth"
+      - "Added unnecessary throttleByRecordCount method that was not in ground truth"
+      - "Modified wrong query runner files (updateMany, deleteMany, restoreMany) instead of the base service"
+scores:
+  correctness: 2
+  completeness: 2
+  tests: 6
+  quality: 5
+  similarity: 1
