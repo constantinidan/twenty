@@ -16,6 +16,20 @@ export const useDownloadFakeRecords = () => {
       objectMetadataItem.updatableFields,
     );
 
+  const serializeValueForCSV = (value: any): string => {
+    if (value === null || value === undefined) {
+      return '';
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+    // For arrays and objects, serialize as JSON
+    return JSON.stringify(value);
+  };
+
   const buildTableWithFakeRecords = () => {
     const headerRow: string[] = [];
     const bodyRows: string[][] = [[], [], []];
@@ -36,7 +50,8 @@ export const useDownloadFakeRecords = () => {
             SETTINGS_NON_COMPOSITE_FIELD_TYPE_CONFIGS[field.type].exampleValues;
 
           bodyRows.forEach((_, index) => {
-            bodyRows[index].push(exampleValues?.[index] || '');
+            const value = exampleValues?.[index];
+            bodyRows[index].push(serializeValueForCSV(value));
           });
 
           break;
@@ -67,11 +82,11 @@ export const useDownloadFakeRecords = () => {
 
           bodyRows.forEach((_, index) => {
             subFields.forEach(({ subFieldName }) => {
-              bodyRows[index].push(
+              const value =
                 exampleValues?.[index]?.[
                   subFieldName as keyof (typeof exampleValues)[typeof index]
-                ] || '',
-              );
+                ];
+              bodyRows[index].push(serializeValueForCSV(value));
             });
           });
 
@@ -86,7 +101,8 @@ export const useDownloadFakeRecords = () => {
               .exampleValues;
 
           bodyRows.forEach((_, index) => {
-            bodyRows[index].push(exampleValues?.[index] || '');
+            const value = exampleValues?.[index];
+            bodyRows[index].push(serializeValueForCSV(value));
           });
 
           break;
