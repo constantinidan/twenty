@@ -116,6 +116,7 @@ packages/
 - **GraphQL** API with code-first approach
 - **Redis** for caching and session management
 - **BullMQ** for background job processing
+- **OpenTelemetry** for observability and metrics - metrics track system events (job completions, cron executions, errors) not just user actions
 
 ### Database
 - **PostgreSQL** as primary database
@@ -126,6 +127,14 @@ packages/
 ## Development Workflow
 
 IMPORTANT: Use Context7 for code generation, setup or configuration steps, or library/API documentation. Automatically use the Context7 MCP tools to resolve library IDs and get library docs without waiting for explicit requests.
+
+### Understanding Requirements
+When working with vague or minimal issue descriptions:
+1. **Search the codebase thoroughly** - Don't assume based on keywords alone. Use Grep and Glob to find ALL related code paths, jobs, services, and modules.
+2. **Look for existing patterns** - Find similar metrics, jobs, or features to understand naming conventions and implementation patterns.
+3. **Consider the business context** - "Deleted workspaces" could mean manual deletions, API deletions, OR automated cron job deletions. "Webhook" could mean creation, execution, or completion. Explore all possibilities.
+4. **Check for background jobs and cron tasks** - Many metrics track automated processes (jobs, cron tasks, workers) rather than direct user actions.
+5. **When in doubt, search broader** - Search for related terms (e.g., "webhook call", "webhook job", "workspace cleaner", "cron delete") before making assumptions.
 
 ### Before Making Changes
 1. Always run linting and type checking after code changes
