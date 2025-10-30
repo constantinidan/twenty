@@ -1,0 +1,27 @@
+ground_truth_url: https://github.com/twentyhq/twenty/pull/15413
+issue_url:
+overall_score: 0.0
+passed: false
+notes:
+  strengths: "The agent created a complete implementation with proper metrics tracking, added tests, and followed good software engineering practices with comprehensive documentation in the commit message."
+  weaknesses: "The implementation is completely incorrect - it addresses an entirely different problem than the ground truth PR. The ground truth PR focuses on Common API query throttling with metrics for rate-limited queries, while the agent implemented calendar/message sync throttling metrics. None of the 7 files modified in the ground truth PR were touched by the agent, and instead 9 completely different files were modified. This is a fundamental misunderstanding of the requirements."
+  deviations:
+    negative:
+      - "Completely different scope - agent modified calendar/message sync files instead of Common API query runner files"
+      - "Missing all 7 files from ground truth: common-base-query-runner.service.ts, core-common-api.module.ts, metadata.module-factory.ts, throttler.service.ts, throttler.service.spec.ts, and config-variables.ts"
+      - "Agent added 9 different files related to calendar/message sync that were not part of the ground truth"
+      - "Did not rename tokenBucketThrottle to tokenBucketThrottleOrThrow as required"
+      - "Did not add MetricsService to common-base-query-runner.service.ts"
+      - "Did not wrap throttle calls in try-catch to emit CommonApiQueryRateLimited metrics"
+      - "Did not remove useThrottler plugin from metadata.module-factory.ts"
+      - "Did not add MetricsModule import to core-common-api.module.ts"
+      - "Did not change API_RATE_LIMITING_LONG_LIMIT from 1000 to 100"
+      - "Did not add CommonApiQueryRateLimited metric key (added calendar/message sync keys instead)"
+      - "Did not update method signature to accept authContext instead of workspaceId"
+      - "Did not add guard check for isDefined(authContext.apiKey)"
+scores:
+  correctness: 0
+  completeness: 0
+  tests: 0
+  quality: 5
+  similarity: 0
