@@ -33,6 +33,7 @@ type TransformGroupByDataToBarChartDataResult = {
   yAxisLabel?: string;
   showDataLabels: boolean;
   layout?: 'vertical' | 'horizontal';
+  isTruncated: boolean;
 };
 
 const EMPTY_BAR_CHART_RESULT: TransformGroupByDataToBarChartDataResult = {
@@ -44,6 +45,7 @@ const EMPTY_BAR_CHART_RESULT: TransformGroupByDataToBarChartDataResult = {
   yAxisLabel: undefined,
   showDataLabels: false,
   layout: 'vertical',
+  isTruncated: false,
 };
 
 export const transformGroupByDataToBarChartData = ({
@@ -169,5 +171,6 @@ export const transformGroupByDataToBarChartData = ({
     yAxisLabel,
     showDataLabels,
     layout,
+    isTruncated: baseResult.isTruncated,
   };
 };

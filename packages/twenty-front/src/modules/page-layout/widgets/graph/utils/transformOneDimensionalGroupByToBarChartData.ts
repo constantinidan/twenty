@@ -28,6 +28,7 @@ type TransformOneDimensionalGroupByToBarChartDataResult = {
   indexBy: string;
   keys: string[];
   series: BarChartSeries[];
+  isTruncated: boolean;
 };
 
 export const transformOneDimensionalGroupByToBarChartData = ({
@@ -46,6 +47,7 @@ export const transformOneDimensionalGroupByToBarChartData = ({
 
   // TODO: Add a limit to the query instead of slicing here (issue: twentyhq/core-team-issues#1600)
   const limitedResults = rawResults.slice(0, GRAPH_MAXIMUM_NUMBER_OF_GROUPS);
+  const isTruncated = rawResults.length > GRAPH_MAXIMUM_NUMBER_OF_GROUPS;
 
   const data: BarChartDataItem[] = limitedResults.map((result) => {
     const dimensionValues = result.groupByDimensionValues;
@@ -87,5 +89,6 @@ export const transformOneDimensionalGroupByToBarChartData = ({
     indexBy: indexByKey,
     keys: [aggregateField.name],
     series,
+    isTruncated,
   };
 };

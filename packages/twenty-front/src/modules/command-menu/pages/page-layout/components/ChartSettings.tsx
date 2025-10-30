@@ -16,11 +16,18 @@ import { type ChartConfiguration } from '@/command-menu/pages/page-layout/types/
 import { CHART_CONFIGURATION_SETTING_IDS } from '@/command-menu/pages/page-layout/types/ChartConfigurationSettingIds';
 import { isChartSettingDisabled } from '@/command-menu/pages/page-layout/utils/isChartSettingDisabled';
 import { CommandMenuPages } from '@/command-menu/types/CommandMenuPages';
+import { useGraphBarChartWidgetData } from '@/page-layout/widgets/graph/graphWidgetBarChart/hooks/useGraphBarChartWidgetData';
 import { useOpenDropdown } from '@/ui/layout/dropdown/hooks/useOpenDropdown';
 import { useSelectableList } from '@/ui/layout/selectable-list/hooks/useSelectableList';
+import styled from '@emotion/styled';
 import { t } from '@lingui/core/macro';
+import { Info } from 'twenty-ui/display';
 
 import { type GraphType, type PageLayoutWidget } from '~/generated/graphql';
+
+const StyledInfoContainer = styled.div`
+  padding: ${({ theme }) => theme.spacing(2)};
+`;
 
 export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
   const { updateCommandMenuPageInfo } = useUpdateCommandMenuPageInfo();
@@ -72,6 +79,23 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
 
   const chartSettings = GRAPH_TYPE_INFORMATION[currentGraphType].settings;
 
+  // Only call the hook for bar charts to check if data is truncated
+  const isBarChart = configuration?.__typename === 'BarChartConfiguration';
+
+  // Always call the hook (React rules of hooks), but only with valid config
+  // For non-bar charts, pass a dummy configuration
+  const barChartWidgetData = useGraphBarChartWidgetData({
+    objectMetadataItemId: widget.objectMetadataId,
+    configuration: isBarChart
+      ? configuration
+      : ({
+          __typename: 'BarChartConfiguration',
+          graphType: currentGraphType,
+        } as any),
+  });
+
+  const isTruncated = isBarChart && barChartWidgetData.isTruncated;
+
   return (
     <CommandMenuList
       commandGroups={[]}
@@ -79,6 +103,14 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
         ...chartSettings.flatMap((group) => group.items.map((item) => item.id)),
       ]}
     >
+      {isTruncated && (
+        <StyledInfoContainer>
+          <Info
+            accent="blue"
+            text={t`Max 200 bars per chart. Add a filter to reduce data range`}
+          />
+        </StyledInfoContainer>
+      )}
       <ChartTypeSelectionSection
         currentGraphType={currentGraphType}
         setCurrentGraphType={handleGraphTypeChange}
