@@ -133,6 +133,21 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
 
+### Refactoring Guidelines
+When removing or changing core functionality:
+1. **Identify all dependencies**: Search for files, tests, and configurations that depend on what you're changing
+   - Use Grep to find references to the feature being removed
+   - Check for .env files, test files, jest configs, and package.json scripts
+2. **Consider test infrastructure**: If removing a feature that tests depend on (like .env files), replace it with proper mocks or test setup
+   - Create setupTest.ts files with Jest mocks
+   - Add test config constants instead of loading from .env
+   - Update jest.config.ts to use setupFilesAfterEnv
+3. **Update package versions**: Bump minor version for breaking changes (e.g., 0.1.3 → 0.2.0)
+4. **Think holistically**: Don't just remove code - consider what needs to replace it or be cleaned up
+   - Delete obsolete files (.env.e2e, deprecated configs)
+   - Remove unnecessary code comments
+   - Make fields readonly where appropriate
+
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
@@ -144,6 +159,9 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - **Integration tests** for critical backend workflows
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
+- **CLI E2E tests**: Use Jest with `setupFilesAfterEnv` for test mocks instead of .env files
+  - Mock ConfigService in test setup files rather than loading .env files
+  - Store test config constants in `__tests__/e2e/constants/` directory
 
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
