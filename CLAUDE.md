@@ -133,6 +133,26 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
 
+### Build and Package Distribution Patterns
+
+When working on npm packages (like twenty-cli), follow these architectural patterns:
+
+1. **Source Organization**: Static assets and data files that need to be distributed should live in `src/constants/` alongside their usage
+2. **Build Process**: Use `project.json` build targets to copy static assets from `src/constants/` to `dist/constants/` during compilation
+3. **Runtime Paths**: Code should reference assets relative to `__dirname` pointing to locations within the dist folder (e.g., `join(__dirname, '../constants/schemas')`)
+4. **Consistency**: When adding new static assets, follow existing patterns in the package's build configuration
+
+Example pattern from twenty-cli:
+- Source location: `src/constants/schemas/`
+- Build step in `project.json`: `cp -R src/constants/schemas dist/constants`
+- Runtime reference: `join(__dirname, '../constants/schemas')`
+- Path constant: Centralize paths in a constants file (e.g., `constants-path.ts`)
+
+This ensures that:
+- TypeScript compilation and static asset copying are separate steps
+- Assets are properly organized in both source and distribution
+- Paths work correctly in both development and production environments
+
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
