@@ -49,6 +49,21 @@ export const mergePhonesFieldValues = (
 
   const allAdditionalPhones: AdditionalPhoneMetadata[] = [];
 
+  // Collect primary phones from all records (except the selected primary)
+  recordsWithValues.forEach((record) => {
+    if (
+      hasRecordFieldValue(record.value.primaryPhoneNumber) &&
+      record.value.primaryPhoneNumber !== primaryPhoneNumber
+    ) {
+      allAdditionalPhones.push({
+        number: record.value.primaryPhoneNumber,
+        countryCode: record.value.primaryPhoneCountryCode,
+        callingCode: record.value.primaryPhoneCallingCode,
+      });
+    }
+  });
+
+  // Collect additional phones from all records
   recordsWithValues.forEach((record) => {
     if (Array.isArray(record.value.additionalPhones)) {
       allAdditionalPhones.push(

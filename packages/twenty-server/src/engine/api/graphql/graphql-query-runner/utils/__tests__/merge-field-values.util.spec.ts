@@ -83,7 +83,11 @@ describe('mergeFieldValues', () => {
 
       expect(result).toEqual({
         primaryEmail: 'priority@example.com',
-        additionalEmails: ['extra1@example.com', 'extra2@example.com'],
+        additionalEmails: [
+          'first@example.com',
+          'extra1@example.com',
+          'extra2@example.com',
+        ],
       });
     });
   });
