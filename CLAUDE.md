@@ -133,6 +133,16 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
 
+### Error Handling and Constants
+When working with error codes, exception constants, or similar identifiers:
+1. **Check for inconsistencies**: If the constant name doesn't match the error message (e.g., `USER_ALREADY_EXIST` vs "User already exists"), fix the grammar
+2. **Update all references atomically**: Use grep/search to find ALL usages of the constant before renaming, then update them in the same commit
+3. **Common locations for exception references**:
+   - Exception definition files (`*.exception.ts`)
+   - Exception handler files (`*exception-handler*.ts`)
+   - Status mapping files (`*status*.ts`)
+   - Service files using the exception
+
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
