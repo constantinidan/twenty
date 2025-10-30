@@ -23,8 +23,6 @@ export const useDownloadFakeRecords = () => {
     availableFieldMetadataItems.forEach((field) => {
       switch (field.type) {
         case FieldMetadataType.RATING:
-        case FieldMetadataType.ARRAY:
-        case FieldMetadataType.RAW_JSON:
         case FieldMetadataType.UUID:
         case FieldMetadataType.DATE_TIME:
         case FieldMetadataType.DATE:
@@ -37,6 +35,21 @@ export const useDownloadFakeRecords = () => {
 
           bodyRows.forEach((_, index) => {
             bodyRows[index].push(exampleValues?.[index] || '');
+          });
+
+          break;
+        }
+        case FieldMetadataType.ARRAY:
+        case FieldMetadataType.RAW_JSON: {
+          headerRow.push(field.label);
+          const exampleValues =
+            SETTINGS_NON_COMPOSITE_FIELD_TYPE_CONFIGS[field.type].exampleValues;
+
+          bodyRows.forEach((_, index) => {
+            const rawValue = exampleValues?.[index];
+            const serializedValue =
+              rawValue != null ? JSON.stringify(rawValue) : '';
+            bodyRows[index].push(serializedValue);
           });
 
           break;
@@ -67,11 +80,18 @@ export const useDownloadFakeRecords = () => {
 
           bodyRows.forEach((_, index) => {
             subFields.forEach(({ subFieldName }) => {
-              bodyRows[index].push(
+              const rawValue =
                 exampleValues?.[index]?.[
                   subFieldName as keyof (typeof exampleValues)[typeof index]
-                ] || '',
-              );
+                ];
+
+              // Serialize arrays and objects to JSON strings
+              const serializedValue =
+                rawValue != null && typeof rawValue === 'object'
+                  ? JSON.stringify(rawValue)
+                  : rawValue || '';
+
+              bodyRows[index].push(serializedValue);
             });
           });
 
