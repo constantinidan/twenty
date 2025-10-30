@@ -16,6 +16,7 @@ import { AppPath } from '@/types/AppPath';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { OTPInput, type SlotProps } from 'input-otp';
+import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { MainButton } from 'twenty-ui/input';
@@ -178,6 +179,7 @@ const StyledActionBackLinkContainer = styled.div`
 export const SignInUpTOTPVerification = () => {
   const { getAuthTokensFromOTP } = useAuth();
   const { enqueueErrorSnackBar } = useSnackBar();
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigateApp();
   const { readCaptchaToken } = useReadCaptchaToken();
@@ -188,7 +190,10 @@ export const SignInUpTOTPVerification = () => {
   const { form } = useTwoFactorAuthenticationForm();
 
   const submitOTP = async (values: OTPFormValues) => {
+    if (isLoading) return;
+
     try {
+      setIsLoading(true);
       const captchaToken = await readCaptchaToken();
 
       if (!loginToken) {
@@ -205,6 +210,8 @@ export const SignInUpTOTPVerification = () => {
           dedupeKey: 'invalid-otp-dedupe-key',
         },
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -228,6 +235,7 @@ export const SignInUpTOTPVerification = () => {
               onBlur={onBlur}
               onChange={onChange}
               value={value}
+              disabled={isLoading}
               render={({ slots }) => (
                 <StyledOTPContainer>
                   <StyledSlotGroup>
@@ -257,7 +265,13 @@ export const SignInUpTOTPVerification = () => {
           )}
         />
       </StyledMainContentContainer>
-      <MainButton title={t`Submit`} type="submit" variant="primary" fullWidth />
+      <MainButton
+        title={t`Submit`}
+        type="submit"
+        variant="primary"
+        fullWidth
+        disabled={isLoading}
+      />
       <StyledActionBackLinkContainer>
         <ClickToActionLink onClick={handleBack}>
           <Trans>Back</Trans>
