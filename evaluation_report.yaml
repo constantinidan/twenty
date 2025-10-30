@@ -1,0 +1,40 @@
+ground_truth_url: https://github.com/twentyhq/twenty/pull/15207
+issue_url: https://github.com/twentyhq/core-team-issues/issues/1729
+overall_score: 3.3
+passed: false
+notes:
+  strengths: |
+    - The agent correctly identified that the schemas folder was not being included in the npm package
+    - The change made (adding schemas/**/* to the files array) would technically include the schemas in the npm distribution
+    - The commit message was clear and descriptive
+  weaknesses: |
+    - CRITICAL: The agent took a fundamentally different approach that does not match the ground truth solution
+    - The agent only added the schemas folder to the npm package files but did NOT move the schemas to src/constants/schemas/
+    - The ground truth moves schemas INTO src/constants/schemas/ and then copies them to dist/constants during build, while the agent left them in the root schemas/ directory
+    - Missing the creation of constants-path.ts file to consolidate path constants
+    - Did not update any code references to point to the new schema locations
+    - Did not update the build configuration in project.json to copy schemas to dist
+    - Did not update the schema URLs in schemas.ts to point to the new location
+    - Did not increment the package version from 0.1.2-beta to 0.1.2-gamma
+    - The solution is incomplete and would likely break the CLI because the code still references __dirname/../../schemas but those files should be in src/constants/schemas after the full refactor
+    - The approach suggests misunderstanding of the issue - the problem wasn't just about npm packaging, but about proper organization of schemas within the source structure
+  deviations:
+    negative:
+      - "Agent did not move schemas directory from packages/twenty-cli/schemas/ to packages/twenty-cli/src/constants/schemas/"
+      - "Agent did not create constants-path.ts file to consolidate BASE_APPLICATION_PROJECT_PATH and BASE_SCHEMAS_PATH constants"
+      - "Agent did not update app-add.command.ts to import and use BASE_SCHEMAS_PATH"
+      - "Agent did not update schema-validator.ts to import and use BASE_SCHEMAS_PATH"
+      - "Agent did not update app-template.ts to import from new constants-path.ts location"
+      - "Agent did not delete base-application-project-path.ts file"
+      - "Agent did not update schemas.ts SCHEMA_BASE_URL to point to new src/constants/schemas location"
+      - "Agent did not update $id fields in all schema JSON files to reflect new paths"
+      - "Agent did not update $ref fields in appManifest.schema.json and serverlessFunction.schema.json"
+      - "Agent did not update project.json build configuration to copy schemas to dist/constants"
+      - "Agent did not increment package version from 0.1.2-beta to 0.1.2-gamma"
+      - "Agent's solution only partially addresses the issue and would likely cause runtime errors because code references don't match file locations"
+scores:
+  correctness: 2
+  completeness: 1
+  tests: 10
+  quality: 5
+  similarity: 1
