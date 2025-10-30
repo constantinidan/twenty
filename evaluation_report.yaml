@@ -1,0 +1,25 @@
+ground_truth_url: https://github.com/twentyhq/twenty/pull/15086
+issue_url:
+overall_score: 6.3
+passed: false
+notes:
+  strengths: "Successfully identified and fixed the core inverted logic bug in signUpWithoutWorkspace. Changed from findUserByEmailOrThrow to findUserByEmail with explicit existence check, which correctly resolves the issue. The commit message clearly explains the problem and solution. Used a descriptive variable name (existingUser)."
+  weaknesses: "Incomplete implementation - missed critical refactoring changes. Did not rename exception code from USER_ALREADY_EXIST to USER_ALREADY_EXISTS (grammar fix). Failed to update exception code constant in auth.exception.ts. Failed to update references in auth-graphql-api-exception-handler.util.ts and get-auth-exception-rest-status.util.ts. No tests added or modified. Changed 3 fewer lines than ground truth, indicating missing updates."
+  deviations:
+    positive:
+      - "Used more descriptive variable name 'existingUser' instead of 'userExists'"
+    neutral:
+      - "Functionally equivalent logic fix using the same approach"
+    negative:
+      - "Did not rename exception code from USER_ALREADY_EXIST to USER_ALREADY_EXISTS for grammatical correctness"
+      - "Failed to update exception code constant in auth.exception.ts:33"
+      - "Failed to update exception code reference in auth-graphql-api-exception-handler.util.ts:29"
+      - "Failed to update exception code reference in get-auth-exception-rest-status.util.ts:25"
+      - "Modified only 1 file instead of 4 files, missing 75% of the changes"
+      - "No tests added despite test file existing at sign-in-up.service.spec.ts"
+scores:
+  correctness: 7
+  completeness: 4
+  tests: 3
+  quality: 8
+  similarity: 5
