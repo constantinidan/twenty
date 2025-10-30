@@ -8,6 +8,7 @@
   },
   "files": [
     "dist/**/*",
+    "schemas/**/*",
     "!dist/**/*.e2e-spec.*",
     "!dist/**/__tests__/**"
   ],
