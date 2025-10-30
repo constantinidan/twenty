@@ -26,4 +26,6 @@ export enum MetricsKeys {
   AIToolExecutionSucceeded = 'ai-tool-execution/succeeded',
   SchemaVersionMismatch = 'schema-version/mismatch',
   AppVersionMismatch = 'app-version/mismatch',
+  WorkspaceHardDeleted = 'workspace/hard-deleted',
+  WebhookCreated = 'webhook/created',
 }

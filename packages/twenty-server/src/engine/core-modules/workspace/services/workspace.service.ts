@@ -24,6 +24,8 @@ import {
 import { InjectMessageQueue } from 'src/engine/core-modules/message-queue/decorators/message-queue.decorator';
 import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
 import { MessageQueueService } from 'src/engine/core-modules/message-queue/services/message-queue.service';
+import { MetricsService } from 'src/engine/core-modules/metrics/metrics.service';
+import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
 import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twenty-config.service';
 import { UserWorkspaceEntity } from 'src/engine/core-modules/user-workspace/user-workspace.entity';
 import { UserWorkspaceService } from 'src/engine/core-modules/user-workspace/user-workspace.service';
@@ -76,6 +78,7 @@ export class WorkspaceService extends TypeOrmQueryService<WorkspaceEntity> {
     private readonly customDomainManagerService: CustomDomainManagerService,
     @InjectMessageQueue(MessageQueue.deleteCascadeQueue)
     private readonly messageQueueService: MessageQueueService,
+    private readonly metricsService: MetricsService,
   ) {
     super(workspaceRepository);
   }
@@ -306,6 +309,12 @@ export class WorkspaceService extends TypeOrmQueryService<WorkspaceEntity> {
     }
 
     await this.workspaceRepository.delete(id);
+
+    await this.metricsService.incrementCounter({
+      key: MetricsKeys.WorkspaceHardDeleted,
+      eventId: id,
+      shouldStoreInCache: true,
+    });
 
     this.logger.log(`workspace ${id} hard deleted`);
 

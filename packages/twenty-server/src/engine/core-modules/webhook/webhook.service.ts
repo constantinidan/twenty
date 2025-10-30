@@ -6,6 +6,9 @@ import { isDefined } from 'twenty-shared/utils';
 import { ArrayContains, IsNull, Repository } from 'typeorm';
 import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
+import { MetricsService } from 'src/engine/core-modules/metrics/metrics.service';
+import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
+
 import { WebhookEntity } from './webhook.entity';
 import { WebhookException, WebhookExceptionCode } from './webhook.exception';
 
@@ -14,6 +17,7 @@ export class WebhookService {
   constructor(
     @InjectRepository(WebhookEntity)
     private readonly webhookRepository: Repository<WebhookEntity>,
+    private readonly metricsService: MetricsService,
   ) {}
 
   private normalizeTargetUrl(targetUrl: string): string {
@@ -92,7 +96,18 @@ export class WebhookService {
       secret: webhookData.secret,
     });
 
-    return this.webhookRepository.save(webhook);
+    const savedWebhook = await this.webhookRepository.save(webhook);
+
+    await this.metricsService.incrementCounter({
+      key: MetricsKeys.WebhookCreated,
+      eventId: savedWebhook.id,
+      attributes: {
+        workspaceId: savedWebhook.workspaceId,
+      },
+      shouldStoreInCache: true,
+    });
+
+    return savedWebhook;
   }
 
   async update(

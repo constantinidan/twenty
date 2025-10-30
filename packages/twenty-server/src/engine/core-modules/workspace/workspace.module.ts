@@ -16,6 +16,7 @@ import { WorkspaceDomainsModule } from 'src/engine/core-modules/domain/workspace
 import { FeatureFlagModule } from 'src/engine/core-modules/feature-flag/feature-flag.module';
 import { FileUploadModule } from 'src/engine/core-modules/file/file-upload/file-upload.module';
 import { FileModule } from 'src/engine/core-modules/file/file.module';
+import { MetricsModule } from 'src/engine/core-modules/metrics/metrics.module';
 import { OnboardingModule } from 'src/engine/core-modules/onboarding/onboarding.module';
 import { PublicDomainEntity } from 'src/engine/core-modules/public-domain/public-domain.entity';
 import { UserWorkspaceEntity } from 'src/engine/core-modules/user-workspace/user-workspace.entity';
@@ -72,6 +73,7 @@ import { WorkspaceManagerModule } from 'src/engine/workspace-manager/workspace-m
         CustomDomainManagerModule,
         ViewModule,
         WorkspaceManyOrAllFlatEntityMapsCacheModule,
+        MetricsModule,
       ],
       services: [WorkspaceService],
       resolvers: workspaceAutoResolverOpts,
