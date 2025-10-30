@@ -132,6 +132,11 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 2. Test changes with relevant test suites
 3. Ensure database migrations are properly structured
 4. Check that GraphQL schema changes are backward compatible
+5. **When modifying constants, enums, or exception codes**: Always search for and update ALL references across the codebase. Use Grep to find all usages before making changes. This is especially critical for:
+   - Exception codes (e.g., `AuthExceptionCode.USER_ALREADY_EXISTS`)
+   - Enum values
+   - Named constants used across multiple files
+   - Look for references in exception handlers, error mapping utilities, and test files
 
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
