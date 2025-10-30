@@ -1,0 +1,41 @@
+ground_truth_url: https://github.com/twentyhq/twenty/pull/15224
+issue_url:
+overall_score: 8.2
+passed: true
+notes:
+  strengths: |
+    - Correctly identifies and fixes the core issue: primary values from non-priority records are now preserved
+    - Implementation works correctly across all three field types (emails, phones, links)
+    - Code follows the same logical approach as ground truth (collect primary values first, then additional values)
+    - Updated integration tests correctly to reflect new expected behavior
+    - Added deduplication logic to prevent the selected primary from appearing in additional values
+    - Clean code structure with helpful comments
+    - Comprehensive commit message explaining the changes
+
+  weaknesses: |
+    - Missing two comprehensive unit tests that were present in ground truth:
+      * No unit test for PHONES field merge (ground truth has 50-line test)
+      * No unit test for LINKS field merge (ground truth has 45-line test)
+    - Only updated the existing EMAILS test but did not add new test cases for phones and links
+    - Integration tests for companies were not updated (ground truth updated companies-merge-many.integration-spec.ts with 11 changes)
+    - The implementation approach differs slightly from ground truth in variable naming and flow
+
+  deviations:
+    positive:
+      - Implementation correctly handles deduplication to prevent primary value from appearing in additional values
+      - Comments are helpful and explain the two-step collection process
+    neutral:
+      - Uses separate forEach loops instead of ground truth's approach of collecting all items first then filtering
+      - Variable naming differs (allAdditionalEmails vs allEmails in ground truth)
+      - Ground truth renames variables more consistently (allEmails, allPhones, allLinks) while working branch keeps old names
+    negative:
+      - Missing comprehensive unit tests for phones and links merge operations (106 lines of tests in ground truth)
+      - Missing integration test updates for companies (11 lines in ground truth)
+      - Test coverage is significantly less complete (only 1 test file vs 3 test files in ground truth)
+
+scores:
+  correctness: 9
+  completeness: 7
+  tests: 6
+  quality: 8
+  similarity: 8
