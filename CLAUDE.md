@@ -104,6 +104,10 @@ packages/
 - **String literals over enums** (except for GraphQL enums)
 - **No 'any' type allowed**
 - **Event handlers preferred over useEffect** for state updates
+- **Defensive programming for data formatting**: When fixing data serialization issues (e.g., CSV export, JSON formatting), apply fixes at multiple layers:
+  - Serialize data at the source (where it's prepared)
+  - Add type flexibility and re-serialization in formatting functions as a safety net
+  - This ensures robustness even if unexpected data types slip through
 
 ### State Management
 - **Recoil** for global state management
