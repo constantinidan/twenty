@@ -100,9 +100,12 @@ describe('companies merge resolvers (integration)', () => {
           expect.objectContaining({
             url: 'linkedin.com/company/subsidiary-b2',
           }),
+          expect.objectContaining({
+            url: 'https://linkedin.com/company/company-b',
+          }),
         ]),
       );
-      expect(mergedCompany.linkedinLink.secondaryLinks).toHaveLength(4);
+      expect(mergedCompany.linkedinLink.secondaryLinks).toHaveLength(5);
     });
 
     it('should merge links with deduplication', async () => {
@@ -171,7 +174,7 @@ describe('companies merge resolvers (integration)', () => {
       );
       const secondaryLinks = mergedCompany.linkedinLink.secondaryLinks;
 
-      expect(secondaryLinks).toHaveLength(3);
+      expect(secondaryLinks).toHaveLength(4);
 
       const urls = secondaryLinks.map((link: { url: string }) => link.url);
 
@@ -180,6 +183,7 @@ describe('companies merge resolvers (integration)', () => {
           'linkedin.com/company/shared-subsidiary',
           'linkedin.com/company/tech-division',
           'linkedin.com/company/corp-division',
+          'https://linkedin.com/company/corp-tech',
         ]),
       );
 
@@ -247,6 +251,97 @@ describe('companies merge resolvers (integration)', () => {
           expect.objectContaining({ url: 'linkedin.com/company/second-sub' }),
         ]),
       );
+    });
+
+    it('should preserve primary links from all records when merging', async () => {
+      const createCompaniesOperation = createManyOperationFactory({
+        objectMetadataSingularName: 'company',
+        objectMetadataPluralName: 'companies',
+        gqlFields: COMPANY_GQL_FIELDS,
+        data: [
+          {
+            name: 'Company 1',
+            linkedinLink: {
+              primaryLinkUrl: 'https://linkedin.com/company/company1',
+              primaryLinkLabel: 'Company 1 Main',
+              secondaryLinks: [
+                {
+                  url: 'linkedin.com/company/subsidiary-1',
+                  label: 'Sub 1',
+                },
+              ],
+            },
+          },
+          {
+            name: 'Company 2',
+            linkedinLink: {
+              primaryLinkUrl: 'https://linkedin.com/company/company2',
+              primaryLinkLabel: 'Company 2 Main',
+              secondaryLinks: null,
+            },
+          },
+          {
+            name: 'Company 3',
+            linkedinLink: {
+              primaryLinkUrl: 'https://linkedin.com/company/company3',
+              primaryLinkLabel: 'Company 3 Main',
+              secondaryLinks: [
+                {
+                  url: 'linkedin.com/company/subsidiary-3',
+                  label: 'Sub 3',
+                },
+              ],
+            },
+          },
+        ],
+      });
+
+      const createResponse = await makeGraphqlAPIRequest(
+        createCompaniesOperation,
+      );
+
+      const companyIds = createResponse.body.data.createCompanies.map(
+        (c: { id: string }) => c.id,
+      );
+
+      createdCompanyIds.push(...companyIds);
+
+      const mergeOperation = mergeManyOperationFactory({
+        objectMetadataPluralName: 'companies',
+        gqlFields: COMPANY_GQL_FIELDS,
+        ids: companyIds,
+        conflictPriorityIndex: 0,
+      });
+
+      const mergeResponse = await makeGraphqlAPIRequest(mergeOperation);
+      const mergedCompany = mergeResponse.body.data.mergeCompanies;
+
+      expect(mergedCompany.linkedinLink.primaryLinkUrl).toBe(
+        'https://linkedin.com/company/company1',
+      );
+
+      expect(mergedCompany.linkedinLink.secondaryLinks).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            url: 'linkedin.com/company/subsidiary-1',
+          }),
+          expect.objectContaining({
+            url: 'https://linkedin.com/company/company2',
+          }),
+          expect.objectContaining({
+            url: 'https://linkedin.com/company/company3',
+          }),
+          expect.objectContaining({
+            url: 'linkedin.com/company/subsidiary-3',
+          }),
+        ]),
+      );
+      expect(mergedCompany.linkedinLink.secondaryLinks).toHaveLength(4);
+      expect(
+        mergedCompany.linkedinLink.secondaryLinks.map(
+          (l: { url: string }) => l.url,
+        ),
+      ).not.toContain('https://linkedin.com/company/company1');
     });
   });
 });

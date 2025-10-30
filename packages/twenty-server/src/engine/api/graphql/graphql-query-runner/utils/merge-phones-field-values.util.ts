@@ -57,6 +57,19 @@ export const mergePhonesFieldValues = (
         ),
       );
     }
+
+    // Add primary phone from non-priority records to preserve all phones
+    if (
+      record.recordId !== priorityRecordId &&
+      hasRecordFieldValue(record.value.primaryPhoneNumber) &&
+      record.value.primaryPhoneNumber !== primaryPhoneNumber
+    ) {
+      allAdditionalPhones.push({
+        number: record.value.primaryPhoneNumber,
+        countryCode: record.value.primaryPhoneCountryCode,
+        callingCode: record.value.primaryPhoneCallingCode,
+      });
+    }
   });
 
   const uniqueAdditionalPhones = uniqBy(allAdditionalPhones, 'number');

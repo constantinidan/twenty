@@ -85,9 +85,10 @@ describe('people merge resolvers (integration)', () => {
           'john.work@example.com',
           'jane.alt@example.com',
           'jane.personal@example.com',
+          'jane@example.com',
         ]),
       );
-      expect(mergedPerson.emails.additionalEmails).toHaveLength(4);
+      expect(mergedPerson.emails.additionalEmails).toHaveLength(5);
     });
 
     it('should merge emails with deduplication', async () => {
@@ -145,12 +146,13 @@ describe('people merge resolvers (integration)', () => {
       expect(mergedPerson.emails.primaryEmail).toBe('alice@example.com');
       const additionalEmails = mergedPerson.emails.additionalEmails;
 
-      expect(additionalEmails).toHaveLength(3);
+      expect(additionalEmails).toHaveLength(4);
       expect(additionalEmails).toEqual(
         expect.arrayContaining([
           'shared@example.com',
           'alice.work@example.com',
           'bob.work@example.com',
+          'bob@example.com',
         ]),
       );
 
@@ -403,9 +405,10 @@ describe('people merge resolvers (integration)', () => {
         expect.arrayContaining([
           expect.objectContaining({ number: '5559876543' }),
           expect.objectContaining({ number: '4441112222' }),
+          expect.objectContaining({ number: '4445556789' }),
         ]),
       );
-      expect(mergedPerson.phones.additionalPhones).toHaveLength(2);
+      expect(mergedPerson.phones.additionalPhones).toHaveLength(3);
 
       expect(mergedPerson.whatsapp.primaryPhoneNumber).toBe('810407803');
       expect(mergedPerson.whatsapp.primaryPhoneCountryCode).toBe('FR');
@@ -414,9 +417,182 @@ describe('people merge resolvers (integration)', () => {
         expect.arrayContaining([
           expect.objectContaining({ number: '8104078034' }),
           expect.objectContaining({ number: '123456789' }),
+          expect.objectContaining({ number: '987654321' }),
         ]),
       );
-      expect(mergedPerson.whatsapp.additionalPhones).toHaveLength(2);
+      expect(mergedPerson.whatsapp.additionalPhones).toHaveLength(3);
+    });
+
+    it('should preserve primary emails from all records when merging', async () => {
+      const createPersonsOperation = createManyOperationFactory({
+        objectMetadataSingularName: 'person',
+        objectMetadataPluralName: 'people',
+        gqlFields: PERSON_GQL_FIELDS,
+        data: [
+          {
+            name: {
+              firstName: 'Person1',
+              lastName: 'Test',
+            },
+            emails: {
+              primaryEmail: 'person1@example.com',
+              additionalEmails: ['person1.extra@example.com'],
+            },
+          },
+          {
+            name: {
+              firstName: 'Person2',
+              lastName: 'Test',
+            },
+            emails: {
+              primaryEmail: 'person2@example.com',
+              additionalEmails: null,
+            },
+          },
+          {
+            name: {
+              firstName: 'Person3',
+              lastName: 'Test',
+            },
+            emails: {
+              primaryEmail: 'person3@example.com',
+              additionalEmails: ['person3.extra@example.com'],
+            },
+          },
+        ],
+      });
+
+      const createResponse = await makeGraphqlAPIRequest(
+        createPersonsOperation,
+      );
+
+      const createdPersonIds = createResponse.body.data.createPeople.map(
+        ({ id }: { id: string }) => id,
+      );
+
+      createdPersonIdsForCleaning.push(...createdPersonIds);
+
+      const mergeOperation = mergeManyOperationFactory({
+        objectMetadataPluralName: 'people',
+        gqlFields: PERSON_GQL_FIELDS,
+        ids: createdPersonIds,
+        conflictPriorityIndex: 0,
+      });
+
+      const mergeResponse = await makeGraphqlAPIRequest(mergeOperation);
+      const mergedPerson = mergeResponse.body.data.mergePeople;
+
+      expect(mergedPerson.emails.primaryEmail).toBe('person1@example.com');
+
+      expect(mergedPerson.emails.additionalEmails).toEqual(
+        expect.arrayContaining([
+          'person1.extra@example.com',
+          'person2@example.com',
+          'person3@example.com',
+          'person3.extra@example.com',
+        ]),
+      );
+      expect(mergedPerson.emails.additionalEmails).toHaveLength(4);
+
+      expect(mergedPerson.emails.additionalEmails).not.toContain(
+        'person1@example.com',
+      );
+    });
+
+    it('should preserve primary phones from all records when merging', async () => {
+      const createPersonsOperation = createManyOperationFactory({
+        objectMetadataSingularName: 'person',
+        objectMetadataPluralName: 'people',
+        gqlFields: PERSON_GQL_FIELDS,
+        data: [
+          {
+            name: {
+              firstName: 'Phone1',
+              lastName: 'Test',
+            },
+            phones: {
+              primaryPhoneNumber: '1111111111',
+              primaryPhoneCountryCode: 'US',
+              primaryPhoneCallingCode: '+1',
+              additionalPhones: [
+                {
+                  number: '1111111112',
+                  callingCode: '+1',
+                  countryCode: 'US',
+                },
+              ],
+            },
+          },
+          {
+            name: {
+              firstName: 'Phone2',
+              lastName: 'Test',
+            },
+            phones: {
+              primaryPhoneNumber: '2222222222',
+              primaryPhoneCountryCode: 'US',
+              primaryPhoneCallingCode: '+1',
+              additionalPhones: null,
+            },
+          },
+          {
+            name: {
+              firstName: 'Phone3',
+              lastName: 'Test',
+            },
+            phones: {
+              primaryPhoneNumber: '3333333333',
+              primaryPhoneCountryCode: 'US',
+              primaryPhoneCallingCode: '+1',
+              additionalPhones: [
+                {
+                  number: '3333333334',
+                  callingCode: '+1',
+                  countryCode: 'US',
+                },
+              ],
+            },
+          },
+        ],
+      });
+
+      const createResponse = await makeGraphqlAPIRequest(
+        createPersonsOperation,
+      );
+
+      const createdPersonIds = createResponse.body.data.createPeople.map(
+        ({ id }: { id: string }) => id,
+      );
+
+      createdPersonIdsForCleaning.push(...createdPersonIds);
+
+      const mergeOperation = mergeManyOperationFactory({
+        objectMetadataPluralName: 'people',
+        gqlFields: PERSON_GQL_FIELDS,
+        ids: createdPersonIds,
+        conflictPriorityIndex: 0,
+      });
+
+      const mergeResponse = await makeGraphqlAPIRequest(mergeOperation);
+      const mergedPerson = mergeResponse.body.data.mergePeople;
+
+      expect(mergedPerson.phones.primaryPhoneNumber).toBe('1111111111');
+
+      expect(mergedPerson.phones.additionalPhones).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ number: '1111111112' }),
+          expect.objectContaining({ number: '2222222222' }),
+          expect.objectContaining({ number: '3333333333' }),
+          expect.objectContaining({ number: '3333333334' }),
+        ]),
+      );
+      expect(mergedPerson.phones.additionalPhones).toHaveLength(4);
+
+      expect(
+        mergedPerson.phones.additionalPhones?.map(
+          (p: { number: string }) => p.number,
+        ),
+      ).not.toContain('1111111111');
     });
   });
 });
